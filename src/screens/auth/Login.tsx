@@ -1,12 +1,11 @@
 import * as React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import {
   TextInput,
   Button,
   Provider as PaperProvider,
   withTheme,
   Text,
-  MD3Colors,
 } from "react-native-paper";
 
 const LoginScreen = ({ theme }) => {
@@ -28,16 +27,21 @@ const LoginScreen = ({ theme }) => {
           backgroundColor: theme.colors.primary,
         },
         input: {
-          color: "#000000",
+          color: theme.colors.black,
           marginBottom: 10,
           borderColor: theme.colors.placeholder,
-          // Additional dynamic styles based on theme
         },
         button: {
           marginTop: 10,
           paddingVertical: 8,
+          fontSize: 18,
           backgroundColor: theme.colors.secondary,
-          // Additional dynamic styles based on theme
+        },
+        register: {
+          marginTop: 18,
+          paddingVertical: 8,
+          fontSize: 18,
+          backgroundColor: theme.colors.sec2,
         },
       }),
     [theme]
@@ -45,9 +49,22 @@ const LoginScreen = ({ theme }) => {
 
   return (
     <View style={styles.container}>
-      <Text variant="displayMedium" style={{ color: "#ffffff" , alignContent: "center", marginBottom: 6}}>
-        Kitab Khoj
-      </Text>
+      <View style={{ marginBottom: 56 }}>
+        <Text
+          variant="displayMedium"
+          style={{ color: "#ffffff", alignContent: "center", marginBottom: 6 }}
+        >
+          Kitab Khoj
+        </Text>
+      </View>
+      <View style={{ marginBottom: 10 }}>
+        <Text
+          variant="displaySmall"
+          style={{ color: "#ffffff", alignContent: "center", marginBottom: 6 }}
+        >
+          Login
+        </Text>
+      </View>
       <TextInput
         label="Email"
         value={email}
@@ -64,9 +81,24 @@ const LoginScreen = ({ theme }) => {
         style={styles.input}
         secureTextEntry
       />
-      <Button mode="contained" onPress={handleLogin} style={styles.button}>
+      <Button
+        mode="contained"
+        onPress={handleLogin}
+        style={styles.button}
+        textColor="black"
+      >
         Login
       </Button>
+
+      <Button
+        mode="contained"
+        onPress={handleLogin}
+        style={styles.register}
+        textColor="black"
+      >
+        Register
+      </Button>
+      
     </View>
   );
 };

@@ -13,7 +13,9 @@ const theme = {
     ...DefaultTheme.colors,
     primary: "#001524",
     secondary: "#D6CC99",
+    sec2: "#FDE5D4",
     black: "#000000",
+    purple: "#6750A4",
   },
 };
 
