@@ -8,13 +8,13 @@ import {
   Text,
 } from "react-native-paper";
 
-const LoginScreen = ({ theme }) => {
+const LoginScreen = ({ theme, navigation }) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const handleLogin = () => {
-    // Handle login logic here
-    console.log(`Email: ${email}, Password: ${password}`);
+    //navigating to welcome screen
+    navigation.navigate("Welcome");
   };
 
   const styles = React.useMemo(
@@ -49,10 +49,20 @@ const LoginScreen = ({ theme }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ marginBottom: 56 , justifyContent: "center", alignItems: "center"}}>
+      <View
+        style={{
+          marginBottom: 56,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Text
           variant="displayLarge"
-          style={{ color: theme.colors.sec2, alignContent: "center", marginBottom: 6 }}
+          style={{
+            color: theme.colors.sec2,
+            alignContent: "center",
+            marginBottom: 6,
+          }}
         >
           Kitab Khoj
         </Text>
@@ -98,7 +108,6 @@ const LoginScreen = ({ theme }) => {
       >
         Register
       </Button>
-
     </View>
   );
 };
