@@ -9,6 +9,7 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookCard from "../../components/BookCard";
+import { book } from "../../types/const/data";
 
 function CustomerHome({ theme }) {
   const [searchQ, setSearchQ] = useState<string>("");
@@ -62,7 +63,7 @@ function CustomerHome({ theme }) {
         style={styles.search}
       />
       <View style={styles.cardContainer}>
-        <BookCard cardStyle={styles.card} theme={theme}/>
+        <BookCard cardStyle={styles.card} theme={theme} book={book}/>
       </View>
     </View>
   );
