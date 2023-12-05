@@ -1,51 +1,72 @@
-import * as React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import {
-  TextInput,
-  Button,
-  Provider as PaperProvider,
-  withTheme,
-  Text,
-} from "react-native-paper";
+import React, { useState } from "react";
+import { View, StyleSheet } from "react-native";
+import { TextInput, Button, Text, withTheme } from "react-native-paper";
 
-const LoginScreen = ({theme }) => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { firebase_auth } from "../../utils/firebase";
+
+interface LoginScreenProps {
+  theme: any;
+  navigation: any;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const auth = firebase_auth
 
   const handleLogin = () => {
-    //navigating to welcome screen
-    // navigation.navigate("Welcome");
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("logged in", userCredential);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log("error in logging", error);
+        
+      });
   };
 
-  const styles = React.useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          flex: 1,
-          justifyContent: "center",
-          paddingHorizontal: 20,
-          backgroundColor: theme.colors.primary,
-        },
-        input: {
-          color: theme.colors.black,
-          marginBottom: 10,
-          borderColor: theme.colors.placeholder,
-        },
-        button: {
-          marginTop: 10,
-          paddingVertical: 8,
-          fontSize: 18,
-          backgroundColor: theme.colors.secondary,
-        },
-        register: {
-          marginTop: 18,
-          paddingVertical: 8,
-          fontSize: 18,
-          backgroundColor: theme.colors.sec2,
-        },
-      }),
-    [theme]
-  );
+  const handleRegister = async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Successful", userCredential);
+      navigation.navigate("Welcome");
+    } catch (error) {
+      console.log("Error Code == ", error);
+    }
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      paddingHorizontal: 20,
+      backgroundColor: theme.colors.primary,
+    },
+    input: {
+      color: theme.colors.black,
+      marginBottom: 10,
+      borderColor: theme.colors.placeholder,
+    },
+    button: {
+      marginTop: 10,
+      paddingVertical: 8,
+      fontSize: 18,
+      backgroundColor: theme.colors.secondary,
+    },
+    register: {
+      marginTop: 18,
+      paddingVertical: 8,
+      fontSize: 18,
+      backgroundColor: theme.colors.sec2,
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -102,7 +123,7 @@ const LoginScreen = ({theme }) => {
 
       <Button
         mode="contained"
-        onPress={handleLogin}
+        onPress={handleRegister}
         style={styles.register}
         textColor="black"
       >

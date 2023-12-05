@@ -11,19 +11,19 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kitabkhoj.dbms"
+      "bundleIdentifier": "com.kitabkhoj.dbms",
+      "googleServicesFile": "./assets/certs/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kitabkhoj.dbms"
+      "package": "com.kitabkhoj.dbms",
+      "googleServicesFile": "./assets/certs/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +32,7 @@
       "eas": {
         "projectId": "ed97cfd8-aa2d-49d2-b09c-982703810217"
       }
-    }
+    },
+    "plugins": ["@react-native-firebase/app"]
   }
 }

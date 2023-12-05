@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
-import auth from "@react-native-firebase/auth";
+import auth from "@react-native-firebase/auth"
+
 
 const useAuth = () => {
   const [user, setUser] = useState();
