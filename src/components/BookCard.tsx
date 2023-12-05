@@ -6,13 +6,16 @@ const screenWidth = Dimensions.get("window").width;
 
 interface CardProps {
   theme: any;
+  cardStyle: any;
   book: Book;
 }
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
+const RightContent = (props: any) => <Avatar.Icon {...props} icon="burger-menu" />;
 
 export default function BookCard(props: CardProps) {
   const theme = props.theme;
+  const cardStyle = props.cardStyle;
   const book = props.book;
 
   const styles = React.useMemo(
@@ -62,10 +65,10 @@ export default function BookCard(props: CardProps) {
   return (
     <Card style={styles.card}>
       <Card.Title
-      style={{paddingRight: 8}}
         title={book.seller.name}
         subtitle={book.seller.location}
         left={LeftContent}
+        right={RightContent}
       />
       <Card.Cover
         source={{ uri: "https://picsum.photos/700" }}
@@ -88,6 +91,22 @@ export default function BookCard(props: CardProps) {
           style={{ marginBottom: 20 }}
         />
       </Card.Content>
+      {/* <Card.Content>
+        <Text variant="titleLarge">Title: {book.title}</Text>
+        <Text variant="bodyMedium">Author: {book.author}</Text>
+        <Text variant="bodyMedium">Publisher: {book.pub}</Text>
+
+        <Text variant="bodyMedium">{`Used or not?\t${
+          book.used ? "Yes" : "No"
+        }`}</Text>
+        <Text variant="bodyLarge">Genres:</Text>
+        <FlatList
+          data={book.genre}
+          renderItem={renderGenre}
+          horizontal={true}
+          style={{ marginBottom: 20 }}
+        />
+      </Card.Content> */}
       <Card.Actions>
         <Chip icon="cash" textStyle={{ fontWeight: "bold", fontSize: 18 }}>
           {book.price}
