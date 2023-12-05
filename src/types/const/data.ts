@@ -14,3 +14,34 @@ export const book: Book = {
   used: false  ,
   pub: "Penguin Books"
 };
+
+export const books: Book[] = [
+  // ...existing books
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    seller: bookShop,
+    price: 9.99,
+    genre: ["Classic", "Fiction"],
+    used: false,
+    pub: "J.B. Lippincott & Co.",
+  },
+  {
+    title: "1984",
+    author: "George Orwell",
+    seller: bookShop,
+    price: 11.49,
+    genre: ["Dystopian", "Political Fiction"],
+    used: true,
+    pub: "Secker & Warburg",
+  },
+  {
+    title: "The Catcher in the Rye",
+    author: "J.D. Salinger",
+    seller: bookShop,
+    price: 12.79,
+    genre: ["Literary Fiction"],
+    used: false,
+    pub: "Little, Brown and Company",
+  },
+];
