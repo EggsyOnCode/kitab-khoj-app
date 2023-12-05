@@ -1,6 +1,6 @@
-import { StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions, FlatList } from "react-native";
 import React from "react";
-import { Avatar, Button, Card, Text } from "react-native-paper";
+import { Avatar, Button, Card, Text, Chip } from "react-native-paper";
 import { Book } from "../types/Book";
 const screenWidth = Dimensions.get("window").width;
 
@@ -10,8 +10,8 @@ interface CardProps {
   book: Book;
 }
 
-
-const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
+const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
+const RightContent = (props: any) => <Avatar.Icon {...props} icon="burger-menu" />;
 
 export default function BookCard(props: CardProps) {
   const theme = props.theme;
@@ -25,25 +25,93 @@ export default function BookCard(props: CardProps) {
           width: screenWidth * 0.9,
           backgroundColor: theme.colors.card,
         },
+        button: {
+          backgroundColor: theme.colors.purple,
+        },
+        title: {
+          fontSize: 22,
+          fontWeight: "bold",
+          marginBottom: 5,
+          color: theme.colors.textTitle, // Adjust this to match your theme
+        },
+        infoText: {
+          fontSize: 16,
+          marginBottom: 5,
+          color: theme.colors.textInfo, // Adjust this to match your theme
+        },
+        usedText: {
+          fontSize: 16,
+          marginBottom: 10,
+          color: theme.colors.textUsed, // Adjust this to match your theme
+        },
+        genresTitle: {
+          fontSize: 18,
+          fontWeight: "bold",
+          marginBottom: 5,
+          color: theme.colors.textGenres, // Adjust this to match your theme
+        },
       }),
     [theme]
   );
 
+   const renderGenre = ({ item }) => (
+    <View style={{marginRight: 6}}>
+     <Chip icon="check">
+       {item}
+     </Chip>
+    </View>
+   );
+
   return (
     <Card style={styles.card}>
-      <Card.Title title={book.seller.name} subtitle={book.seller.location} left={LeftContent}/>
+      <Card.Title
+        title={book.seller.name}
+        subtitle={book.seller.location}
+        left={LeftContent}
+        right={RightContent}
+      />
       <Card.Cover
         source={{ uri: "https://picsum.photos/700" }}
         resizeMode={`cover`}
         style={{ padding: 5 }}
       />
       <Card.Content>
-        <Text variant="titleLarge">Card title</Text>
-        <Text variant="bodyMedium">Card content</Text>
+        <Text style={styles.title}>Title: {book.title}</Text>
+        <Text style={styles.infoText}>Author: {book.author}</Text>
+        <Text style={styles.infoText}>Publisher: {book.pub}</Text>
+
+        <Text style={styles.usedText}>
+          Used or not? {book.used ? "Yes" : "No"}
+        </Text>
+        <Text style={styles.genresTitle}>Genres:</Text>
+        <FlatList
+          data={book.genre}
+          renderItem={renderGenre}
+          horizontal={true}
+          style={{ marginBottom: 20 }}
+        />
       </Card.Content>
+      {/* <Card.Content>
+        <Text variant="titleLarge">Title: {book.title}</Text>
+        <Text variant="bodyMedium">Author: {book.author}</Text>
+        <Text variant="bodyMedium">Publisher: {book.pub}</Text>
+
+        <Text variant="bodyMedium">{`Used or not?\t${
+          book.used ? "Yes" : "No"
+        }`}</Text>
+        <Text variant="bodyLarge">Genres:</Text>
+        <FlatList
+          data={book.genre}
+          renderItem={renderGenre}
+          horizontal={true}
+          style={{ marginBottom: 20 }}
+        />
+      </Card.Content> */}
       <Card.Actions>
-        <Button>Cancel</Button>
-        <Button>Ok</Button>
+        <Chip icon="cash" textStyle={{ fontWeight: "bold", fontSize: 18 }}>
+          {book.price}
+        </Chip>
+        <Button style={styles.button}>Order</Button>
       </Card.Actions>
     </Card>
   );

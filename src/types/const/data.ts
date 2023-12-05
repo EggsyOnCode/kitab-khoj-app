@@ -6,10 +6,11 @@ const bookShop: BookShop = {
 };
 
 export const book: Book = {
-  title: "Sample Book",
+  title: "Harry Potter",
   author: "John Doe",
   seller: bookShop,
   price: 10.99,
   genre: ["Fiction", "Mystery"],
-  used: false   
+  used: false  ,
+  pub: "Penguin Books"
 };

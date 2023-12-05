@@ -5,6 +5,7 @@ export type Book = {
     price: number,
     genre : String[]
     used: boolean
+    pub: string
 }
 
 export type BookShop = {
