@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "730590305822",
+    "project_id": "kitabkhoj-2b559",
+    "storage_bucket": "kitabkhoj-2b559.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730590305822:android:98dee5fd811c6f5edbd80f",
+        "android_client_info": {
+          "package_name": "com.kitabkhoj.dbms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_oqzveNnZO9jVoYUT0J_XHuQIuobMTTM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

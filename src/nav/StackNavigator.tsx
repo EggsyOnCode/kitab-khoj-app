@@ -5,7 +5,7 @@ import CustomerHome from "../screens/Customer/CustomerHome";
 
 const Stack = createStackNavigator();
 
-function StackNavigator({ theme }) {
+function StackNavigator({ theme }:{theme:any}) {
   return (
     <Stack.Navigator initialRouteName="CustomerHome">
       <Stack.Screen
