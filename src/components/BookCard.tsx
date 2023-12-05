@@ -66,7 +66,6 @@ export default function BookCard(props: CardProps) {
         title={book.seller.name}
         subtitle={book.seller.location}
         left={LeftContent}
-        right={RightContent}
       />
       <Card.Cover
         source={{ uri: "https://picsum.photos/700" }}
