@@ -19,6 +19,8 @@ const theme = {
     sec2: "#FDE5D4",
     black: "#000000",
     purple: "#6750A4",
+    green: "#D9D9D9",
+    card: "#F3EDF7",
   },
 };
 

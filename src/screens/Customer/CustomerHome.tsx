@@ -8,6 +8,7 @@ import {
   Searchbar,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import BookCard from "../../components/BookCard";
 
 function CustomerHome({ theme }) {
   const [searchQ, setSearchQ] = useState<string>("");
@@ -28,6 +29,18 @@ function CustomerHome({ theme }) {
           marginBottom: 30,
           color: theme.colors.sec2,
         },
+        search: {
+            backgroundColor: theme.colors.green,
+            marginBottom: 20
+        },
+        cardContainer: {
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        card: {
+            width: "100%",
+            backgroundColor: theme.colors.sec2,
+        }
       }),
     [theme]
   );
@@ -46,7 +59,11 @@ function CustomerHome({ theme }) {
         placeholder="Search Books"
         onChangeText={onChangeSearch}
         value={searchQ}
+        style={styles.search}
       />
+      <View style={styles.cardContainer}>
+        <BookCard cardStyle={styles.card} theme={theme}/>
+      </View>
     </View>
   );
 }

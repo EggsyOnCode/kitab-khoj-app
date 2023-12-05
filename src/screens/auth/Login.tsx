@@ -8,7 +8,7 @@ import {
   Text,
 } from "react-native-paper";
 
-const LoginScreen = ({ theme }) => {
+const LoginScreen = ({theme }) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
