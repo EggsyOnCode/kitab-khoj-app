@@ -6,6 +6,7 @@ import {
 } from "react-native-paper";
 
 import LoginScreen from "./src/screens/auth/Login";
+import Welcome from "./src/screens/Welcome";
 
 const theme = {
   ...DefaultTheme,

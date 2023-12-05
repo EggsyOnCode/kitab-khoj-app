@@ -49,10 +49,10 @@ const LoginScreen = ({ theme }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ marginBottom: 56 }}>
+      <View style={{ marginBottom: 56 , justifyContent: "center", alignItems: "center"}}>
         <Text
-          variant="displayMedium"
-          style={{ color: "#ffffff", alignContent: "center", marginBottom: 6 }}
+          variant="displayLarge"
+          style={{ color: theme.colors.sec2, alignContent: "center", marginBottom: 6 }}
         >
           Kitab Khoj
         </Text>
@@ -98,7 +98,7 @@ const LoginScreen = ({ theme }) => {
       >
         Register
       </Button>
-      
+
     </View>
   );
 };
