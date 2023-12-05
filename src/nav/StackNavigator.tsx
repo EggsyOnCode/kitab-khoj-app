@@ -1,12 +1,19 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../screens/auth/Login";
 import Welcome from "../screens/Welcome";
+import CustomerHome from "../screens/Customer/CustomerHome";
 
 const Stack = createStackNavigator();
 
 function StackNavigator({ theme }) {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="CustomerHome">
+      <Stack.Screen
+        name="CustomerHome"
+        component={CustomerHome}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme }}
+      />
       <Stack.Screen
         name="Login"
         component={Login}

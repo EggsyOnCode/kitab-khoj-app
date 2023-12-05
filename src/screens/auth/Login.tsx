@@ -8,13 +8,13 @@ import {
   Text,
 } from "react-native-paper";
 
-const LoginScreen = ({ theme, navigation }) => {
+const LoginScreen = ({ theme }) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const handleLogin = () => {
     //navigating to welcome screen
-    navigation.navigate("Welcome");
+    // navigation.navigate("Welcome");
   };
 
   const styles = React.useMemo(

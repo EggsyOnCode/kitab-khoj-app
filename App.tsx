@@ -26,7 +26,7 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
-        <StackNavigator />
+        <StackNavigator theme={theme}/>
       </NavigationContainer>
     </PaperProvider>
   );
