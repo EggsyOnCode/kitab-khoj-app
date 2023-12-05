@@ -4,7 +4,8 @@ import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from "react-native-paper";
-import { useTheme } from "react-native-paper";
+
+import LoginScreen from "./src/screens/auth/Login";
 
 const theme = {
   ...DefaultTheme,
@@ -12,25 +13,14 @@ const theme = {
     ...DefaultTheme.colors,
     primary: "#001524",
     secondary: "#D6CC99",
+    black: "#000000",
   },
 };
 
 export default function App() {
   return (
     <PaperProvider theme={theme}>
-      <View style={styles.container}>
-        <Text>Open up App.tsx to start working on your app!</Text>
-        <StatusBar style="auto" />
-      </View>
+        <LoginScreen theme={theme}/>
     </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
