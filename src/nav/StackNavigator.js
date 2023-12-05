@@ -44,15 +44,15 @@ const StackNavigator = ({ theme }) => {
 
   return (
     <Stack.Navigator initialRouteName="CustomerHome">
-      <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
-        {(props) => <CustomerHome {...props} theme={theme} books={books} />}
-      </Stack.Screen>
       <Stack.Screen
         name="Welcome"
         component={Welcome}
         options={{ headerShown: false }}
         initialParams={{ theme: theme }}
       />
+      <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
+        {(props) => <CustomerHome {...props} theme={theme} books={books} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };

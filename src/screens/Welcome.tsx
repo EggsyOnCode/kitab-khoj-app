@@ -7,7 +7,11 @@ import {
   Text,
 } from "react-native-paper";
 
-const WelcomeScreen = ({ theme }) => {
+interface WelcomeScreenProps {
+  theme: any;
+  navigation: any;
+}
+const WelcomeScreen:React.FC<WelcomeScreenProps> = ({ theme, navigation }) => {
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
@@ -48,7 +52,7 @@ const WelcomeScreen = ({ theme }) => {
 
   const handleCustomerRegister = () => {
     // Handle customer registration logic
-    console.log("Register as Customer");
+    navigation.navigate('CustomerHome')
   };
 
   return (
