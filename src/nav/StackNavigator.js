@@ -7,6 +7,7 @@ import { books } from "../types/const/data";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { firebase_auth } from "../utils/firebase";
+import Scanner from "../screens/BookShop/Scanner";
 
 
 const Stack = createStackNavigator();
@@ -43,7 +44,13 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="CustomerHome">
+    <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Screen
+        name="Scanner"
+        component={Scanner}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme }}
+      />
       <Stack.Screen
         name="Welcome"
         component={Welcome}

@@ -12,7 +12,20 @@
           "package_name": "com.kitabkhoj.dbms"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "730590305822-njau2o5hqmk3cmlubcfro8jvrfi4257s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kitabkhoj.dbms",
+            "certificate_hash": "3413093f607fecf536c573faa10aac5d58aeaf6f"
+          }
+        },
+        {
+          "client_id": "730590305822-hmqgcjgabn4heg094nilmjli35devi1u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC_oqzveNnZO9jVoYUT0J_XHuQIuobMTTM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730590305822-hmqgcjgabn4heg094nilmjli35devi1u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "730590305822-u7mqmv74l7m2vk7tgt6jc6r1a7t7taua.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kitabkhoj.dbms"
+              }
+            }
+          ]
         }
       }
     }

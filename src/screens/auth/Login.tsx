@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Text, withTheme } from "react-native-paper";
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import { firebase_auth } from "../../utils/firebase";
 
 interface LoginScreenProps {
@@ -13,7 +18,8 @@ interface LoginScreenProps {
 const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const auth = firebase_auth
+  const auth = firebase_auth;
+  const provider = new GoogleAuthProvider();
 
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
@@ -24,7 +30,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log("error in logging", error);
-        
       });
   };
 
@@ -40,6 +45,29 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
     } catch (error) {
       console.log("Error Code == ", error);
     }
+  };
+
+  const handleGoogle = async () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential?.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        console.log("oauth working", user);
+        
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
   };
 
   const styles = StyleSheet.create({
@@ -128,6 +156,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
         textColor="black"
       >
         Register
+      </Button>
+      <Button
+        mode="contained"
+        onPress={handleGoogle}
+        style={styles.register}
+        textColor="black"
+      >
+        Use Google
       </Button>
     </View>
   );
