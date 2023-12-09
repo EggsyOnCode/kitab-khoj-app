@@ -1,11 +1,21 @@
-import * as React from "react";
-import { View, StyleSheet } from "react-native";
-import { Button, Avatar, withTheme , Text} from "react-native-paper";
-
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Image } from "react-native";
+import { Button, Avatar, withTheme, Text } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 interface ScannerScreenProps {
   theme: any;
   navigation: any;
 }
+
+const imgDir = FileSystem.documentDirectory + "images/";
+
+const ensureDirExists = async () => {
+  const dirInfo = await FileSystem.getInfoAsync(imgDir);
+  if (!dirInfo.exists) {
+    await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+  }
+};
 
 const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const styles = React.useMemo(
@@ -23,7 +33,6 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
           width: "50%",
           backgroundColor: theme.colors.secondary,
           marginBottom: 6,
-          
         },
         title: {
           marginBottom: 30,
@@ -33,10 +42,45 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
     [theme]
   );
 
-  const handleScan = () => {
-    // Handle scanning logic
-    console.log("Scanning...");
+  const [uploading, setUploading] = useState(false);
+  const [images, setImages] = useState<any[]>([]);
+
+  // Load images on startup
+  useEffect(() => {}, []);
+
+  // Save image to file system
+  const saveImage = async (uri: string) => {
+    await ensureDirExists();
+    const filename = new Date().getTime() + ".jpeg";
+    const dest = imgDir + filename;
+    await FileSystem.copyAsync({ from: uri, to: dest });
+    setImages([...images, dest]);
   };
+
+  // Select image from library or camera
+  const selectImage = async (useLibrary: boolean) => {
+    let result;
+    const options: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.75,
+    };
+
+    if (useLibrary) {
+      result = await ImagePicker.launchImageLibraryAsync(options);
+    } else {
+      await ImagePicker.requestCameraPermissionsAsync();
+      result = await ImagePicker.launchCameraAsync(options);
+    }
+
+    // Save image if not cancelled
+    if (!result.canceled) {
+      saveImage(result.assets[0].uri);
+    }
+  };
+
+  // Render image list item
 
   return (
     <View style={styles.container}>
@@ -51,7 +95,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       />
       <Button
         mode="contained"
-        onPress={handleScan}
+        onPress={() => selectImage(true)}
         style={styles.button}
         icon="camera"
         labelStyle={{ fontSize: 20, color: theme.colors.black }}

@@ -9,15 +9,14 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { firebase_auth } from "../utils/firebase";
 import Scanner from "../screens/BookShop/Scanner";
 
-
 const Stack = createStackNavigator();
 
 const StackNavigator = ({ theme }) => {
   const navigation = useNavigation();
   const [user, setUser] = useState(false);
-  const auth = firebase_auth
+  const auth = firebase_auth;
 
-  useEffect(()=>{
+  useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -28,23 +27,23 @@ const StackNavigator = ({ theme }) => {
         setUser(false);
       }
     });
-  }, [user])
+  }, [user]);
 
-  if (!user) {
-    return (
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-          initialParams={{theme: theme, navigation: navigation}}
-        />
-      </Stack.Navigator>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <Stack.Navigator initialRouteName="Login">
+  //       <Stack.Screen
+  //         name="Login"
+  //         component={Login}
+  //         options={{ headerShown: false }}
+  //         initialParams={{ theme: theme, navigation: navigation }}
+  //       />
+  //     </Stack.Navigator>
+  //   );
+  // }
 
   return (
-    <Stack.Navigator initialRouteName="Welcome">
+    <Stack.Navigator initialRouteName="Scanner">
       <Stack.Screen
         name="Scanner"
         component={Scanner}
@@ -56,6 +55,12 @@ const StackNavigator = ({ theme }) => {
         component={Welcome}
         options={{ headerShown: false }}
         initialParams={{ theme: theme }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme, navigation: navigation }}
       />
       <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
         {(props) => <CustomerHome {...props} theme={theme} books={books} />}
