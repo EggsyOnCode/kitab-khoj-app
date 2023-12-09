@@ -3,8 +3,12 @@ import { View, StyleSheet, Image } from "react-native";
 import { Button, Avatar, withTheme, Text } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import {Dimensions} from 'react-native';
+import { Dimensions } from "react-native";
+import axios from "axios";
+import Config from "react-native-config";
+import { manipulateAsync } from "expo-image-manipulator";
 
+const api_key = Config.OCR_API;
 
 interface ScannerScreenProps {
   theme: any;
@@ -45,59 +49,57 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
     [theme]
   );
 
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
-  const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState<string>();
+  const windowWidth = Dimensions.get("window").width;
+  const windowHeight = Dimensions.get("window").height;
+  const [image, setImage] = useState<any>();
+  const [text, setText] = useState<string>();
 
   // Load images on startup
   useEffect(() => {}, []);
 
+  const apiCall = async (img: any) => {
+    const api_key = "AIzaSyDTpcRPc-44RydvSTDu6Oh8lrSuw2vSE_Q";
+    // const options = {
+    //   headers: {
+    //     apikey: api_key,
+    //   },
+    //   params: {
+    //     base64Image: img,
+    //     filetype: "jpg",
+    //   },
+    // };
 
-  // // Select image from library or camera
-  // const selectImage = async (useLibrary: boolean) => {
-  //   let result;
-  //   const options: ImagePicker.ImagePickerOptions = {
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 0.75,
-  //   };
+    const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${api_key}`;
+    const reqData = {
+      requests: [
+        {
+          image: {
+            content: img,
+          },
+          features: [{ type: "TEXT_DETECTION" }],
+        },
+      ],
+    };
 
-  //   if (useLibrary) {
-  //     result = await ImagePicker.launchImageLibraryAsync(options);
-  //   } else {
-  //     await ImagePicker.requestCameraPermissionsAsync();
-  //     result = await ImagePicker.launchCameraAsync(options);
-  //   }
+    const res = await axios.post(apiUrl, reqData);
+    console.log(res.data.responses[0].fullTextAnnotation.text);
+  };
 
-  //   // Save image if not cancelled
-  //   if (!result.canceled) {
-  //     saveImage(result.assets[0].uri);
-  //   }
-  // };
-
-
-  const launchCamera = async ()=>{
+  const launchCamera = async () => {
     try {
       await ImagePicker.requestCameraPermissionsAsync();
       let result = await ImagePicker.launchCameraAsync({
-        cameraType: ImagePicker.CameraType.front,
-        allowsEditing: true,
-        aspect: [1,1],
-        quality: 1
+        cameraType: ImagePicker.CameraType.back,
+        base64: true,
+        aspect: [1, 1],
+        quality: 1,
       });
-      if(!result.canceled){
-        console.log(result.assets[0].uri);
+      if (!result.canceled) {
         setImage(result.assets[0].uri);
+        await apiCall(result.assets[0].base64);
       }
-
-    } catch (error) {
-      
-    }
-  }
-
-  // Render image list item
+    } catch (error) {}
+  };
 
   return (
     <View style={styles.container}>
@@ -121,7 +123,18 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       >
         Scan
       </Button>
-      {image && <Image source={{uri: image}} style={{height: windowHeight*0.4, width: windowWidth * 0.8, borderWidth: 1, borderRadius: 11}}/>}
+      {image && (
+        <Image
+          source={{ uri: image }}
+          style={{
+            height: windowHeight * 0.4,
+            width: windowWidth * 0.8,
+            borderWidth: 1,
+            borderRadius: 11,
+          }}
+        />
+      )}
+      {}
     </View>
   );
 };
