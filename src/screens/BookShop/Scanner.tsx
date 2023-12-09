@@ -40,6 +40,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
           alignItems: "center",
           backgroundColor: theme.colors.primary,
           padding: 20,
+          flex: 1,
           paddingTop: 60,
         },
         button: {
@@ -62,8 +63,9 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [image, setImage] = useState<any>();
   const [words, setWords] = useState<string | null>(null);
   const [proc, setProc] = useState<boolean>(false);
-  // Load images on startup
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log(words?.toString());
+  }, [words]);
 
   const apiCall = async (img: any) => {
     setProc(true);
@@ -83,7 +85,6 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
 
     const res = await axios.post(apiUrl, reqData);
 
-    console.log(res.data.responses[0].fullTextAnnotation.text);
     setWords(res.data.responses[0].fullTextAnnotation.text);
     setProc(false);
   };
@@ -128,26 +129,28 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       >
         Scan
       </Button>
-      <ScrollView>
-        {image && (
-          <Image
-            source={{ uri: image }}
-            style={{
-              height: windowHeight * 0.4,
-              width: windowWidth * 0.8,
-              borderWidth: 1,
-              borderRadius: 11,
-              marginTop: 20,
-              marginBottom: 50,
-            }}
-          />
-        )}
-      </ScrollView>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View>
+        <View style={{ alignItems: "center" }}>
+          {image && (
+            <Image
+              source={{ uri: image }}
+              style={{
+                height: windowHeight * 0.4,
+                width: windowWidth * 0.8,
+                borderWidth: 1,
+                borderRadius: 11,
+                marginTop: 20,
+                marginBottom: 20, // Adjust the margin as needed
+              }}
+            />
+          )}
           {!proc ? (
             words && (
-              <Text style={{ color: "red", marginBottom: 6 }}>{words}</Text>
+              <View style={{padding:20}}>
+                <Text style={{ color: "red", marginBottom: 6 }}>
+                  {words}
+                </Text>
+              </View>
             )
           ) : (
             <View
@@ -156,6 +159,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
                 justifyContent: "center",
                 alignItems: "center",
                 marginTop: 20,
+                padding: 20,
               }}
             >
               <ActivityIndicator size="large" color="blue" />
