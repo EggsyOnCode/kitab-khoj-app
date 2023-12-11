@@ -26,16 +26,17 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
         },
         button: {
           paddingVertical: 8,
-          width: "50%",
+          width: windowWidth * 0.92,
+          borderRadius: 11,
           backgroundColor: theme.colors.secondary,
-          marginBottom: 12,
+          marginVertical: 30,
         },
         rampContainer: {
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: theme.colors.green,
           padding: 20,
-          borderRadius: 11
+          borderRadius: 11,
         },
         title: {
           marginBottom: 20,
@@ -103,7 +104,7 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission logic
+    console.log("clicked");
   };
 
   return (
@@ -267,6 +268,10 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
             }}
           />
         </View>
+
+        <Button style={styles.button} onPress={handleSubmit}>
+          <Text variant="headlineSmall">Register</Text>
+        </Button>
       </ScrollView>
     </View>
   );
