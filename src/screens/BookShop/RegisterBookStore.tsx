@@ -172,6 +172,7 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
             onChangeText={handleLocationChange}
             textColor={theme.colors.black}
             style={styles.input}
+            multiline={true}
             theme={{
               colors: {
                 text: theme.colors.black,

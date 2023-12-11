@@ -159,6 +159,7 @@ const RegisterCustomer: React.FC<props> = ({ theme, navigation }) => {
             label={"Delivery Address"}
             value={delivery}
             onChangeText={handledeliveryChange}
+            multiline={true}
             textColor={theme.colors.black}
             style={styles.input}
             theme={{
