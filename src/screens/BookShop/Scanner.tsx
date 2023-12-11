@@ -12,8 +12,6 @@ import * as FileSystem from "expo-file-system";
 import { Dimensions } from "react-native";
 import axios from "axios";
 import Config from "react-native-config";
-import { manipulateAsync } from "expo-image-manipulator";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const api_key = Config.OCR_API;
 
@@ -69,8 +67,6 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
 
   const apiCall = async (img: any) => {
     setProc(true);
-    const api_key = "AIzaSyDTpcRPc-44RydvSTDu6Oh8lrSuw2vSE_Q";
-
     const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${api_key}`;
     const reqData = {
       requests: [

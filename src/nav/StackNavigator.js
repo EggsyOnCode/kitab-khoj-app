@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { firebase_auth } from "../utils/firebase";
 import Scanner from "../screens/BookShop/Scanner";
+import RegisterBookStore from "../screens/BookShop/RegisterBookStore";
 
 const Stack = createStackNavigator();
 
@@ -43,7 +44,13 @@ const StackNavigator = ({ theme }) => {
   // }
 
   return (
-    <Stack.Navigator initialRouteName="Scanner">
+    <Stack.Navigator initialRouteName="RegisterBookShop">
+      <Stack.Screen
+        name="RegisterBookShop"
+        component={RegisterBookStore}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme }}
+      />
       <Stack.Screen
         name="Scanner"
         component={Scanner}
