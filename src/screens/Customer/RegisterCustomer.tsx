@@ -58,8 +58,8 @@ const RegisterCustomer: React.FC<props> = ({ theme, navigation }) => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [bizHelpline, setBizHelpline] = useState("");
-  const [location, setLocation] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [delivery, setDelivery] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankAccountName, setBankAccountName] = useState("");
   const [jazzCash, setJazzCash] = useState("");
@@ -72,12 +72,12 @@ const RegisterCustomer: React.FC<props> = ({ theme, navigation }) => {
     setEmail(text);
   };
 
-  const handleBizHelplineChange = (text: string) => {
-    setBizHelpline(text);
+  const handlephoneNumberChange = (text: string) => {
+    setPhoneNumber(text);
   };
 
-  const handleLocationChange = (text: string) => {
-    setLocation(text);
+  const handledeliveryChange = (text: string) => {
+    setDelivery(text);
   };
 
   const handleBankAccountNumberChange = (text: string) => {
@@ -141,9 +141,9 @@ const RegisterCustomer: React.FC<props> = ({ theme, navigation }) => {
           />
 
           <TextInput
-            label={"Biz Help Line"}
-            value={bizHelpline}
-            onChangeText={handleBizHelplineChange}
+            label={"Phone Number"}
+            value={phoneNumber}
+            onChangeText={handlephoneNumberChange}
             textColor={theme.colors.black}
             style={styles.input}
             theme={{
@@ -156,9 +156,9 @@ const RegisterCustomer: React.FC<props> = ({ theme, navigation }) => {
           />
 
           <TextInput
-            label={"Location"}
-            value={location}
-            onChangeText={handleLocationChange}
+            label={"Delivery Address"}
+            value={delivery}
+            onChangeText={handledeliveryChange}
             textColor={theme.colors.black}
             style={styles.input}
             theme={{
