@@ -4,6 +4,8 @@
 node_modules/
 android/
 
+src/utils/firebase.js
+
 # Expo
 .expo/
 dist/
