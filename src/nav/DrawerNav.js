@@ -7,20 +7,23 @@ import {
   DrawerItemList,
   DrawerItem,
 } from "@react-navigation/drawer";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 const Drawer = createDrawerNavigator();
 
-const handleSignOut = () => {
+const handleSignOut = async () => {
   auth()
     .signOut()
     .then(() => {
       console.log("User account signed out!");
+      alert("You are logged out!");
     })
     .catch((error) => {
       console.log(error);
 
       console.error(error);
     });
+  await GoogleSignin.revokeAccess();
 };
 
 function CustomDrawerContent(props) {
@@ -32,7 +35,7 @@ function CustomDrawerContent(props) {
   );
 }
 
-function DrawerNav({theme}) {
+function DrawerNav({ theme }) {
   return (
     <Drawer.Navigator
       screenOptions={{

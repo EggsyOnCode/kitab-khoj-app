@@ -24,8 +24,8 @@ function GoogleSignIn({theme}: {theme:any}) {
 
       // Get the users ID token
       const { idToken } = await GoogleSignin.signIn();
+      alert("Welcome")
 
-      alert(idToken);
       // Create a Google credential with the token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 

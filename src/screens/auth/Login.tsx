@@ -34,7 +34,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
   };
 
   const handleLoginIn = () => {
-    console.log(email, password);
     auth()
       .signInWithEmailAndPassword(email.trim(), password)
       .then(() => {
