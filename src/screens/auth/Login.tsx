@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Text, withTheme } from "react-native-paper";
-
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
 import auth from "@react-native-firebase/auth";
-import { firebase_auth } from "../../utils/firebase";
 import GoogleSignIn from "../../auth/GoogleSignIn";
 
 interface LoginScreenProps {

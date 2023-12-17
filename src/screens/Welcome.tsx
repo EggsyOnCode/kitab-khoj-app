@@ -47,12 +47,12 @@ const WelcomeScreen:React.FC<WelcomeScreenProps> = ({ theme, navigation }) => {
 
   const handleBookshopRegister = () => {
     // Handle bookshop registration logic
-    console.log("Register as Bookshop");
+    navigation.navigate("RegisterBookShop");
   };
 
   const handleCustomerRegister = () => {
     // Handle customer registration logic
-    navigation.navigate('CustomerHome')
+    navigation.navigate("RegisterCustomer");
   };
 
   return (
