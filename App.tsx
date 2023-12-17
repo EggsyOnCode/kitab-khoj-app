@@ -9,6 +9,7 @@ import LoginScreen from "./src/screens/auth/Login";
 import Welcome from "./src/screens/Welcome";
 import StackNavigator from "./src/nav/StackNavigator";
 import { NavigationContainer } from "@react-navigation/native";
+import DrawerNav from "./src/nav/DrawerNav";
 
 const theme = {
   ...DefaultTheme,
@@ -28,7 +29,7 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
-        <StackNavigator theme={theme}/>
+        <DrawerNav theme={theme}/>
       </NavigationContainer>
     </PaperProvider>
   );
