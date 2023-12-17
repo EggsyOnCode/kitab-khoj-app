@@ -24,6 +24,7 @@ const theme = {
     green: "#D9D9D9",
     card: "#F3EDF7",
     darkPurple: "#211F26",
+    red: "#7E2721",
   },
 };
 
