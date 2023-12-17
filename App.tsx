@@ -10,6 +10,7 @@ import Welcome from "./src/screens/Welcome";
 import StackNavigator from "./src/nav/StackNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import DrawerNav from "./src/nav/DrawerNav";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const theme = {
   ...DefaultTheme,
@@ -29,7 +30,7 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
-        <DrawerNav theme={theme}/>
+        <DrawerNav theme={theme} />
       </NavigationContainer>
     </PaperProvider>
   );

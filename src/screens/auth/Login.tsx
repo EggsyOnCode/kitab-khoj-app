@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, Keyboard, KeyboardAvoidingViewBase } from "react-native";
 import { TextInput, Button, Text, withTheme } from "react-native-paper";
 import auth from "@react-native-firebase/auth";
 import GoogleSignIn from "../../auth/GoogleSignIn";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface LoginScreenProps {
   theme: any;
@@ -45,7 +46,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
       });
   };
 
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -73,68 +73,75 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
   });
 
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          marginBottom: 56,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          variant="displayLarge"
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View
           style={{
-            color: theme.colors.sec2,
-            alignContent: "center",
-            marginBottom: 6,
+            marginBottom: 56,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          Kitab Khoj
-        </Text>
-      </View>
-      <View style={{ marginBottom: 10 }}>
-        <Text
-          variant="displaySmall"
-          style={{ color: "#ffffff", alignContent: "center", marginBottom: 6 }}
+          <Text
+            variant="displayLarge"
+            style={{
+              color: theme.colors.sec2,
+              alignContent: "center",
+              marginBottom: 6,
+            }}
+          >
+            Kitab Khoj
+          </Text>
+        </View>
+        <View style={{ marginBottom: 10 }}>
+          <Text
+            variant="displaySmall"
+            style={{
+              color: "#ffffff",
+              alignContent: "center",
+              marginBottom: 6,
+            }}
+          >
+            Login
+          </Text>
+        </View>
+        <TextInput
+          label="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          mode="outlined"
+          style={styles.input}
+          autoCapitalize="none"
+        />
+        <TextInput
+          label="Password"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          mode="outlined"
+          style={styles.input}
+          secureTextEntry
+        />
+
+        <Button
+          mode="contained"
+          onPress={handleLoginIn}
+          style={styles.button}
+          textColor="black"
         >
           Login
-        </Text>
-      </View>
-      <TextInput
-        label="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-        mode="outlined"
-        style={styles.input}
-        autoCapitalize="none"
-      />
-      <TextInput
-        label="Password"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        mode="outlined"
-        style={styles.input}
-        secureTextEntry
-      />
-      <Button
-        mode="contained"
-        onPress={handleLoginIn}
-        style={styles.button}
-        textColor="black"
-      >
-        Login
-      </Button>
+        </Button>
 
-      <Button
-        mode="contained"
-        onPress={handleSignIn}
-        style={styles.register}
-        textColor="black"
-      >
-        Register
-      </Button>
-      <GoogleSignIn theme={theme} />
-    </View>
+        <Button
+          mode="contained"
+          onPress={handleSignIn}
+          style={styles.register}
+          textColor="black"
+        >
+          Register
+        </Button>
+        <GoogleSignIn theme={theme} />
+      </View>
+    </SafeAreaView>
   );
 };
 

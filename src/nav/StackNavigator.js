@@ -11,6 +11,7 @@ import Scanner from "../screens/BookShop/Scanner";
 import RegisterBookStore from "../screens/BookShop/RegisterBookStore";
 import RegisterCustomer from "../screens/Customer/RegisterCustomer";
 import auth from "@react-native-firebase/auth";
+import BookShopHome from "../screens/BookShop/BookShopHome";
 const Stack = createStackNavigator();
 
 const StackNavigator = ({ theme }) => {
@@ -50,7 +51,16 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="Welcome">
+    <Stack.Navigator initialRouteName="BookShopHome">
+      <Stack.Screen
+        name="BookShopHome"
+        component={BookShopHome}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme }}
+      />
+      <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
+        {(props) => <CustomerHome {...props} theme={theme} books={books} />}
+      </Stack.Screen>
       <Stack.Screen
         name="Welcome"
         component={Welcome}
@@ -75,9 +85,6 @@ const StackNavigator = ({ theme }) => {
         options={{ headerShown: false }}
         initialParams={{ theme: theme }}
       />
-      <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
-        {(props) => <CustomerHome {...props} theme={theme} books={books} />}
-      </Stack.Screen>
     </Stack.Navigator>
   );
 };

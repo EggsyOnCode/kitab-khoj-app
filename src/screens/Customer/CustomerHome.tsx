@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import { Text, Searchbar } from "react-native-paper";
+import { Text, Searchbar , withTheme} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookCard from "../../components/BookCard";
 import { Book } from "../../types/Book";
@@ -52,29 +52,31 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme, books }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-      <Text variant="displayMedium" style={styles.title}>
-        Browse Our Catalogues
-      </Text>
-      <Searchbar
-        placeholder="Search Books"
-        onChangeText={onChangeSearch}
-        value={searchQ}
-        style={styles.search}
-      />
-        <View style={styles.cardContainer}>
-          <FlatList
-            data={books}
-            renderItem={renderBook}
-            horizontal={false}
-            style={{ marginBottom: 20 }}
-            keyExtractor={(item) => item.title.toString()} // Assuming each book has an 'id' property
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          <Text variant="displayMedium" style={styles.title}>
+            Browse Our Catalogues
+          </Text>
+          <Searchbar
+            placeholder="Search Books"
+            onChangeText={onChangeSearch}
+            value={searchQ}
+            style={styles.search}
           />
-        </View>
-      </ScrollView>
-    </View>
+          <View style={styles.cardContainer}>
+            <FlatList
+              data={books}
+              renderItem={renderBook}
+              horizontal={false}
+              style={{ marginBottom: 20 }}
+              keyExtractor={(item) => item.title.toString()} // Assuming each book has an 'id' property
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
-export default CustomerHome;
+export default withTheme(CustomerHome);
