@@ -1,17 +1,22 @@
-import { View, Dimensions, StyleSheet } from "react-native";
-import React from "react";
-import { withTheme, Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import BookHomeButton from "../../components/buttons/BookHomeButton";
+import { View, StyleSheet, Dimensions, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import {
+  Avatar,
+  Button,
+  Icon,
+  Searchbar,
+  Text,
+  withTheme,
+} from "react-native-paper";
+
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-interface props{
-    theme: any,
-    nav: any
+interface props {
+  theme: any;
+  navigation: any;
 }
-
-const BookShopHome:React.FC<props> = ({theme, nav}) => {
+const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
@@ -21,7 +26,6 @@ const BookShopHome:React.FC<props> = ({theme, nav}) => {
           backgroundColor: theme.colors.primary,
           padding: 20,
           flexGrow: 1,
-          paddingRight: 2,
           paddingTop: 60,
         },
         button: {
@@ -53,36 +57,36 @@ const BookShopHome:React.FC<props> = ({theme, nav}) => {
           width: windowWidth * 0.8,
           marginBottom: 20,
         },
+        search: {
+          backgroundColor: theme.colors.green,
+          marginVertical: 20,
+        },
       }),
     [theme]
   );
+  const [searchQ, setSearchQ] = useState<string>("");
 
+  const onChangeSearch = (e: string) => {
+    setSearchQ(e);
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text variant="headlineLarge" style={styles.title}>
-          Manage Your
+          View/Edit
         </Text>
         <Text variant="headlineLarge" style={styles.title}>
-          Book Repository
+          Book Catalogue
         </Text>
-        <View style={{ justifyContent: "center" }}>
-          <BookHomeButton
-            title="Add a Book"
-            navigation={nav}
-            theme={theme}
-            handleButton={() => {}}
-          ></BookHomeButton>
-          <BookHomeButton
-            title="View Catalogue"
-            navigation={nav}
-            theme={theme}
-            handleButton={() => {nav.navigate("BookShopCatalog")}}
-          ></BookHomeButton>
-        </View>
+        <Searchbar
+          placeholder="Search Catalogue"
+          onChangeText={onChangeSearch}
+          value={searchQ}
+          style={styles.search}
+        />
       </View>
     </SafeAreaView>
   );
 };
 
-export default withTheme(BookShopHome);
+export default withTheme(BookShopCatalog);

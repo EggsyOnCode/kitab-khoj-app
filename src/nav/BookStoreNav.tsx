@@ -6,15 +6,15 @@ import BookShopSettings from "../screens/BookShop/BookShopSettings";
 
 interface props{
   theme: any,
-  navigaton: any
+  navigation: any
 }
 
-const BookStoreNav: React.FC<props> = ({ theme, navigaton }) => {
+const BookStoreNav: React.FC<props> = ({ theme, navigation }) => {
   const [index, setIndex] = React.useState(0);
 
-  const OrdersRoute = () => <BookShopOrders />;
+  const OrdersRoute = () => <BookShopOrders theme={theme} navigation={navigation}/>;
   const SettingsRoute = () => <BookShopSettings />;
-  const HomeRoute = ()=><BookShopHome nav={navigaton} theme={theme}/>
+  const HomeRoute = ()=><BookShopHome nav={navigation} theme={theme}/>
 
 
   const [routes] = React.useState([
