@@ -8,7 +8,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import auth from "@react-native-firebase/auth";
 import { firebase_auth } from "../../utils/firebase";
+import GoogleSignIn from "../../auth/GoogleSignIn";
 
 interface LoginScreenProps {
   theme: any;
@@ -18,57 +20,40 @@ interface LoginScreenProps {
 const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const auth = firebase_auth;
-  const provider = new GoogleAuthProvider();
 
-  const handleLogin = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log("logged in", userCredential);
+  const handleSignIn = () => {
+    console.log(email, password);
+    auth()
+      .createUserWithEmailAndPassword(email.trim(), password)
+      .then(() => {
+        console.log("User account created & signed in!");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log("error in logging", error);
+        if (error.code === "auth/email-already-in-use") {
+          console.log("That email address is already in use!");
+        }
+
+        if (error.code === "auth/invalid-email") {
+          console.log("That email address is invalid!");
+        }
+
+        console.error(error);
       });
   };
 
-  const handleRegister = async () => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log("Successful", userCredential);
-      navigation.navigate("Welcome");
-    } catch (error) {
-      console.log("Error Code == ", error);
-    }
-  };
-
-  const handleGoogle = async () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        console.log("oauth working", user);
-        
+  const handleLoginIn = () => {
+    console.log(email, password);
+    auth()
+      .signInWithEmailAndPassword(email.trim(), password)
+      .then(() => {
+        console.log("User account logged in!");
       })
       .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
+        console.log(error.code);
+        console.error(error);
       });
   };
+
 
   const styles = StyleSheet.create({
     container: {
@@ -142,7 +127,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
       />
       <Button
         mode="contained"
-        onPress={handleLogin}
+        onPress={handleLoginIn}
         style={styles.button}
         textColor="black"
       >
@@ -151,20 +136,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
 
       <Button
         mode="contained"
-        onPress={handleRegister}
+        onPress={handleSignIn}
         style={styles.register}
         textColor="black"
       >
         Register
       </Button>
-      <Button
-        mode="contained"
-        onPress={handleGoogle}
-        style={styles.register}
-        textColor="black"
-      >
-        Use Google
-      </Button>
+      <GoogleSignIn theme={theme} />
     </View>
   );
 };

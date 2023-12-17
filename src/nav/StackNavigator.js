@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Text, View } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../screens/auth/Login";
 import Welcome from "../screens/Welcome";
@@ -10,42 +10,53 @@ import { firebase_auth } from "../utils/firebase";
 import Scanner from "../screens/BookShop/Scanner";
 import RegisterBookStore from "../screens/BookShop/RegisterBookStore";
 import RegisterCustomer from "../screens/Customer/RegisterCustomer";
-
+import auth from "@react-native-firebase/auth";
 const Stack = createStackNavigator();
 
 const StackNavigator = ({ theme }) => {
   const navigation = useNavigation();
+  // const auth = firebase_auth;
+
+  const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(false);
-  const auth = firebase_auth;
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) {
+      setInitializing(false);
+    }
+  }
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        setUser(true);
-        // ...
-      } else {
-        setUser(false);
-      }
-    });
-  }, [user]);
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    console.log("state update: ", user);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
-  // if (!user) {
-  //   return (
-  //     <Stack.Navigator initialRouteName="Login">
-  //       <Stack.Screen
-  //         name="Login"
-  //         component={Login}
-  //         options={{ headerShown: false }}
-  //         initialParams={{ theme: theme, navigation: navigation }}
-  //       />
-  //     </Stack.Navigator>
-  //   );
-  // }
+  if (initializing) return null;
+
+  if (!user) {
+    return (
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+          initialParams={{ theme: theme, navigation: navigation }}
+        />
+      </Stack.Navigator>
+    );
+  }
 
   return (
-    <Stack.Navigator initialRouteName="RegisterCustomer">
+    <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Screen
+        name="Welcome"
+        component={Welcome}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme }}
+      />
       <Stack.Screen
         name="RegisterCustomer"
         component={RegisterCustomer}
@@ -63,18 +74,6 @@ const StackNavigator = ({ theme }) => {
         component={Scanner}
         options={{ headerShown: false }}
         initialParams={{ theme: theme }}
-      />
-      <Stack.Screen
-        name="Welcome"
-        component={Welcome}
-        options={{ headerShown: false }}
-        initialParams={{ theme: theme }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{ headerShown: false }}
-        initialParams={{ theme: theme, navigation: navigation }}
       />
       <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
         {(props) => <CustomerHome {...props} theme={theme} books={books} />}

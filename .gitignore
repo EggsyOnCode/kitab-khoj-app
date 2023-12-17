@@ -4,7 +4,6 @@
 node_modules/
 android/
 
-src/utils/firebase.js
 
 # Expo
 .expo/
@@ -37,3 +36,5 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+src/utils/firebase.js
