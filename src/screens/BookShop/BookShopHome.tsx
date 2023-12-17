@@ -71,7 +71,7 @@ const BookShopHome:React.FC<props> = ({theme, nav}) => {
             title="Add a Book"
             navigation={nav}
             theme={theme}
-            handleButton={() => {}}
+            handleButton={() => {nav.navigate("Scanner")}}
           ></BookHomeButton>
           <BookHomeButton
             title="View Catalogue"

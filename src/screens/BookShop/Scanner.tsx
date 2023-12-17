@@ -13,7 +13,8 @@ import { Dimensions } from "react-native";
 import axios from "axios";
 import Config from "react-native-config";
 
-const api_key = Config.OCR_API;
+// const api_key = Config.OCR_API;
+const api_key = "AIzaSyDTpcRPc-44RydvSTDu6Oh8lrSuw2vSE_Q";
 
 interface ScannerScreenProps {
   theme: any;
