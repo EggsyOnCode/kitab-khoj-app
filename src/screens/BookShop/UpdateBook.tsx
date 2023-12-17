@@ -174,7 +174,7 @@ const UpdateBook: React.FC<props> = ({ theme }) => {
             />
             <Button
               onPress={addCategoryChip}
-              style={{ backgroundColor: theme.colors.sec2, height: 60 , marginBottom:20}}
+              style={{ backgroundColor: theme.colors.secondary, height: 60 , marginBottom:20}}
             >
               Add Category
             </Button>

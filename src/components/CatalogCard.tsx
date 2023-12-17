@@ -1,6 +1,14 @@
 import { StyleSheet, View, Dimensions, FlatList } from "react-native";
 import React from "react";
-import { Avatar, Button, Card, Text, Chip } from "react-native-paper";
+import {
+  Avatar,
+  Button,
+  Card,
+  Text,
+  Chip,
+  Dialog,
+  Portal,
+} from "react-native-paper";
 import { Book } from "../types/Book";
 import { ScrollView } from "react-native-gesture-handler";
 const screenWidth = Dimensions.get("window").width;
@@ -8,7 +16,7 @@ const screenWidth = Dimensions.get("window").width;
 interface CardProps {
   theme: any;
   book: Book;
-  navigation?: any
+  navigation?: any;
 }
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
@@ -64,48 +72,87 @@ export default function CatalogCard(props: CardProps) {
       <Chip icon="check">{item}</Chip>
     </View>
   );
+  const [visible, setVisible] = React.useState(false);
+
+  const hideDialog = () => setVisible(false);
+
+  const handleDelete = () => {
+    setVisible(true);
+  };
+
+  const handleBookRemoval = ()=>{
+    console.log("book to be deleted");
+    
+  }
 
   return (
-    <Card style={styles.card}>
-      <Card.Cover
-        source={{ uri: "https://picsum.photos/700" }}
-        resizeMode={`cover`}
-        style={{ padding: 5 }}
-      />
-      <Card.Content>
-        <View
-          style={{
-            flexDirection: "row",
-            marginVertical: 16,
-            alignItems: "center", // Center content vertically
-            justifyContent: "space-between", // Spacing between title and chip
-          }}
-        >
-          <Text style={styles.title}>Title: {book.title}</Text>
-          <Chip icon="cash" textStyle={{fontSize:16}}>{book.price}</Chip>
-        </View>
-
-        <Text style={styles.infoText}>Author: {book.author}</Text>
-        <Text style={styles.infoText}>Publisher: {book.pub}</Text>
-
-        <Text style={styles.usedText}>
-          Used or not? {book.used ? "Yes" : "No"}
-        </Text>
-        <Text style={styles.genresTitle}>Genres:</Text>
-        <ScrollView>
-        <FlatList
-          data={book.genre}
-          renderItem={renderGenre}
-          horizontal={true}
-          style={{ marginBottom: 20 }}
+    <View>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>Warning</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              The Book "{book.title}" would be removed from your catalogue!!
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleBookRemoval}>OK</Button>
+            <Button onPress={hideDialog}>QUIT</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      <Card style={styles.card}>
+        <Card.Cover
+          source={{ uri: "https://picsum.photos/700" }}
+          resizeMode={`cover`}
+          style={{ padding: 5 }}
         />
-        </ScrollView>
-      </Card.Content>
-      <Card.Actions>
-        <View></View>
-        <Button style={styles.buttonRed}>Remove</Button>
-        <Button style={styles.button} onPress={()=>{nav.navigate("UpdateBook")}}>Update</Button>
-      </Card.Actions>
-    </Card>
+        <Card.Content>
+          <View
+            style={{
+              flexDirection: "row",
+              marginVertical: 16,
+              alignItems: "center", // Center content vertically
+              justifyContent: "space-between", // Spacing between title and chip
+            }}
+          >
+            <Text style={styles.title}>Title: {book.title}</Text>
+            <Chip icon="cash" textStyle={{ fontSize: 16 }}>
+              {book.price}
+            </Chip>
+          </View>
+
+          <Text style={styles.infoText}>Author: {book.author}</Text>
+          <Text style={styles.infoText}>Publisher: {book.pub}</Text>
+
+          <Text style={styles.usedText}>
+            Used or not? {book.used ? "Yes" : "No"}
+          </Text>
+          <Text style={styles.genresTitle}>Genres:</Text>
+          <ScrollView>
+            <FlatList
+              data={book.genre}
+              renderItem={renderGenre}
+              horizontal={true}
+              style={{ marginBottom: 20 }}
+            />
+          </ScrollView>
+        </Card.Content>
+        <Card.Actions>
+          <View></View>
+          <Button style={styles.buttonRed} onPress={handleDelete}>
+            Remove
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={() => {
+              nav.navigate("UpdateBook");
+            }}
+          >
+            Update
+          </Button>
+        </Card.Actions>
+      </Card>
+    </View>
   );
 }
