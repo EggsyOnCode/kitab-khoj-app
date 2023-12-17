@@ -72,7 +72,7 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
 
   const renderBook = ({ item }: { item: Book }) => (
     <View style={{ marginBottom: 30 }}>
-      <CatalogCard theme={theme} book={item} />
+      <CatalogCard theme={theme} book={item} navigation={navigation}/>
     </View>
   );
   return (

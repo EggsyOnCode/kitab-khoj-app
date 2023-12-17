@@ -2,11 +2,13 @@ import { StyleSheet, View, Dimensions, FlatList } from "react-native";
 import React from "react";
 import { Avatar, Button, Card, Text, Chip } from "react-native-paper";
 import { Book } from "../types/Book";
+import { ScrollView } from "react-native-gesture-handler";
 const screenWidth = Dimensions.get("window").width;
 
 interface CardProps {
   theme: any;
   book: Book;
+  navigation?: any
 }
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
@@ -15,6 +17,7 @@ const RightContent = (props: any) => <Avatar.Icon {...props} icon="menu" />;
 export default function CatalogCard(props: CardProps) {
   const theme = props.theme;
   const book = props.book;
+  const nav = props.navigation;
 
   const styles = React.useMemo(
     () =>
@@ -89,17 +92,19 @@ export default function CatalogCard(props: CardProps) {
           Used or not? {book.used ? "Yes" : "No"}
         </Text>
         <Text style={styles.genresTitle}>Genres:</Text>
+        <ScrollView>
         <FlatList
           data={book.genre}
           renderItem={renderGenre}
           horizontal={true}
           style={{ marginBottom: 20 }}
         />
+        </ScrollView>
       </Card.Content>
       <Card.Actions>
         <View></View>
         <Button style={styles.buttonRed}>Remove</Button>
-        <Button style={styles.button}>Update</Button>
+        <Button style={styles.button} onPress={()=>{nav.navigate("UpdateBook")}}>Update</Button>
       </Card.Actions>
     </Card>
   );
