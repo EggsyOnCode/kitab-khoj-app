@@ -23,6 +23,7 @@ const theme = {
     purple: "#6750A4",
     green: "#D9D9D9",
     card: "#F3EDF7",
+    darkPurple: "#211F26",
   },
 };
 
