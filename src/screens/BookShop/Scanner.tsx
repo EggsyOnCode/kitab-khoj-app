@@ -63,7 +63,22 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [words, setWords] = useState<string | null>(null);
   const [proc, setProc] = useState<boolean>(false);
   useEffect(() => {
-    console.log(words?.toString());
+    const arrayOfStrings = words?.split("\n");
+    const fetchBookAttr = async ()=>{
+      try {
+        const res = await axios.get(
+          `http://10.7.82.109:5000/process_text?txt=${arrayOfStrings}`
+        );
+        // Handle the response
+        console.log(res.data);
+      } catch (error) {
+        // Handle error
+        console.error("Error:", error);
+      }
+      
+    }
+
+    fetchBookAttr();
   }, [words]);
 
   const apiCall = async (img: any) => {

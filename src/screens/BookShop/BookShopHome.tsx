@@ -58,7 +58,7 @@ const BookShopHome:React.FC<props> = ({theme, nav}) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 , backgroundColor: theme.colors.sec2}}>
       <View style={styles.container}>
         <Text variant="headlineLarge" style={styles.title}>
           Manage Your

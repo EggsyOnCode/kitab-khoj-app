@@ -1,8 +1,18 @@
-import { View, StyleSheet, Dimensions } from "react-native";
-import React, { useState } from "react";
-import { Button, Avatar, withTheme, Text, TextInput } from "react-native-paper";
+import { View, StyleSheet, Dimensions, Modal } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Avatar,
+  withTheme,
+  Text,
+  TextInput,
+  Snackbar,
+  ActivityIndicator,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
+import axios from "axios";
+import auth, { firebase } from "@react-native-firebase/auth";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -57,6 +67,11 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
     [theme]
   );
 
+  const getEmail = () => {
+    const user = firebase.auth().currentUser;
+    return user?.email?.toString();
+  };
+
   //states
   const [name, setName] = useState("");
   const [shopkeeper, setShopkeeper] = useState("");
@@ -66,7 +81,9 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankAccountName, setBankAccountName] = useState("");
-  const [jazzCash, setJazzCash] = useState("");
+  const [sadaPay, setsadaPay] = useState("");
+  const [proc, setProc] = useState<boolean>(false);
+  const [canNav, setcanNav] = useState(false);
 
   const handleNameChange = (text: string) => {
     setName(text);
@@ -99,12 +116,98 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
     setBankAccountName(text);
   };
 
-  const handleJazzCashChange = (text: string) => {
-    setJazzCash(text);
+  const handlesadaPayChange = (text: string) => {
+    setsadaPay(text);
   };
 
-  const handleSubmit = () => {
-    console.log("clicked");
+  useEffect(() => {
+    const nav = ()=>{
+      if (canNav){
+        navigation.navigate("BookShopHome")
+      }
+    }
+
+    nav();
+  }, [canNav]);
+
+  const handleSubmit = async () => {
+    try {
+      setProc(true);
+      let shopkeeper_id;
+      let bizId;
+
+      const shopkeeperData = {
+        email: `${shopkeeper}@gmail.com`,
+        name: shopkeeper,
+        phone: phoneNumber,
+      };
+
+      try {
+        const shopkeeperRes = await axios.post(
+          "http:/10.7.82.109:3000/v1/Shopkeeper/create",
+          shopkeeperData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        shopkeeper_id = shopkeeperRes?.data?.data?.result?.id;
+        console.log("Shopkeeper ID:", shopkeeper_id);
+      } catch (shopkeeperError) {
+        console.error("Shopkeeper API Error:", shopkeeperError);
+      }
+
+      const bookshopData = {
+        location: location,
+        name: name,
+        shopkeeper_id: shopkeeper_id,
+      };
+
+      try {
+        const bookshopRes = await axios.post(
+          "http:/10.7.82.109:3000/v1/Bookshop",
+          bookshopData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        bizId = bookshopRes?.data?.data?.result?.id;
+        console.log("Bookshop ID:", bizId);
+      } catch (bookshopError) {
+        console.error("Bookshop API Error:", bookshopError);
+      }
+
+      const financeData = {
+        bookshop_id: bizId,
+        bank_name: bankAccountName,
+        bank_account: bankAccountNumber,
+        sadapay: sadaPay,
+      };
+
+      try {
+        const finRes = await axios.post(
+          "http:/10.7.82.109:3000/v1/BookShopFinance",
+          financeData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Finance Response:", finRes.data);
+      } catch (financeError) {
+        console.error("Finance API Error:", financeError);
+      }
+
+      setProc(false);
+      setcanNav(true);
+      // navigation.navigate("BookShopHome");
+    } catch (mainError) {
+      console.error("Main Process Error:", mainError);
+    }
   };
 
   return (
@@ -255,9 +358,9 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
           />
 
           <TextInput
-            label={"Jazzcash Number"}
-            value={jazzCash}
-            onChangeText={handleJazzCashChange}
+            label={"sadaPay Number"}
+            value={sadaPay}
+            onChangeText={handlesadaPayChange}
             textColor={theme.colors.black}
             style={styles.input}
             theme={{
@@ -273,6 +376,24 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
         <Button style={styles.button} onPress={handleSubmit}>
           <Text variant="headlineSmall">Register</Text>
         </Button>
+
+        <Modal
+          transparent={true}
+          animationType="none"
+          visible={proc}
+          onRequestClose={() => setProc(false)}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <ActivityIndicator size="large" color="#ffffff" />
+          </View>
+        </Modal>
       </ScrollView>
     </View>
   );

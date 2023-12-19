@@ -32,7 +32,10 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
-        <DrawerNav theme={theme} />
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.black }}>
+          <StatusBar backgroundColor={theme.colors.secondary} />
+          <DrawerNav theme={theme} />
+        </SafeAreaView>
       </NavigationContainer>
     </PaperProvider>
   );

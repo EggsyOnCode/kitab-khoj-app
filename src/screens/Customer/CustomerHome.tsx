@@ -45,7 +45,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme, books }) => {
     <View style={{ marginBottom: 30 }}>
       <BookCard theme={theme} book={item} />
     </View>
-  );
+  );  
 
   const onChangeSearch = (e: string) => {
     setSearchQ(e);

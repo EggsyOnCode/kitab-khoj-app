@@ -54,7 +54,13 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="BookShopNav">
+    <Stack.Navigator initialRouteName="RegisterBookShop">
+      <Stack.Screen
+        name="BookShopHome"
+        component={BookShopHome}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme, navigation: navigation }}
+      />
       <Stack.Screen
         name="BookShopNav"
         component={BookStoreNav}
