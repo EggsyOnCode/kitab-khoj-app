@@ -3,19 +3,25 @@ import { BottomNavigation, Text, withTheme } from "react-native-paper";
 import BookShopHome from "../screens/BookShop/BookShopHome";
 import BookShopOrders from "../screens/BookShop/BookShopOrders";
 import BookShopSettings from "../screens/BookShop/BookShopSettings";
+import CustomerHome from "../screens/Customer/CustomerHome";
+import { books } from "../types/const/data";
+import CustomerOrders from "../screens/Customer/CustomerOrders";
 
-interface props{
-  theme: any,
-  navigation: any
+interface props {
+  theme: any;
+  navigation: any;
 }
 
-const BookStoreNav: React.FC<props> = ({ theme, navigation }) => {
+const CustomerHomeNav: React.FC<props> = ({ theme, navigation }) => {
   const [index, setIndex] = React.useState(0);
 
-  const OrdersRoute = () => <BookShopOrders theme={theme} navigation={navigation}/>;
+  const OrdersRoute = () => (
+    <CustomerOrders theme={theme} navigation={navigation} />
+  );
   const SettingsRoute = () => <BookShopSettings />;
-  const HomeRoute = ()=><BookShopHome navigation={navigation} theme={theme}/>
-
+  const HomeRoute = () => (
+    <CustomerHome books={books} theme={theme} />
+  );
 
   const [routes] = React.useState([
     {
@@ -39,10 +45,10 @@ const BookStoreNav: React.FC<props> = ({ theme, navigation }) => {
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
-      barStyle={{ backgroundColor:  theme.colors.darkPurple}}
+      barStyle={{ backgroundColor: theme.colors.darkPurple }}
       activeColor={theme.colors.darkPurple}
       inactiveColor={theme.colors.sec2}
     />
   );
 };
-export default withTheme(BookStoreNav);
+export default withTheme(CustomerHomeNav);

@@ -16,6 +16,7 @@ import BookStoreNav from "./BookStoreNav";
 import BookShopCatalog from "../screens/BookShop/BookShopCatalog";
 import UpdateBook from "../screens/BookShop/UpdateBook";
 import BookAttributes from "../screens/BookShop/BookAttributes";
+import CustomerHomeNav from "./CustomerHomeNav";
 const Stack = createStackNavigator();
 
 const StackNavigator = ({ theme }) => {
@@ -55,7 +56,19 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="BookShopHome">
+    <Stack.Navigator initialRouteName="CustomerHomeNav">
+      <Stack.Screen
+        name="BookShopNav"
+        component={BookStoreNav}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme, navigation: navigation }}
+      />
+      <Stack.Screen
+        name="CustomerHomeNav"
+        component={CustomerHomeNav}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme, navigation: navigation }}
+      />
       <Stack.Screen
         name="BookAttributes"
         component={BookAttributes}
@@ -67,12 +80,7 @@ const StackNavigator = ({ theme }) => {
         options={{ headerShown: false }}
         initialParams={{ theme: theme, navigation: navigation }}
       />
-      <Stack.Screen
-        name="BookShopNav"
-        component={BookStoreNav}
-        options={{ headerShown: false }}
-        initialParams={{ theme: theme, navigation: navigation }}
-      />
+
       <Stack.Screen
         name="UpdateBook"
         component={UpdateBook}

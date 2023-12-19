@@ -20,7 +20,6 @@ const windowHeight = Dimensions.get("window").height;
 interface props {
   navigation: any;
   theme: any;
-  //props title: pTitle
   route: any;
 }
 

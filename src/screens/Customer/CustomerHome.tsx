@@ -52,7 +52,6 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme, books }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Text variant="displayMedium" style={styles.title}>
@@ -75,7 +74,6 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme, books }) => {
           </View>
         </ScrollView>
       </View>
-    </SafeAreaView>
   );
 };
 
