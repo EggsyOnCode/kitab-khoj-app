@@ -20,6 +20,7 @@ import CatalogCard from "../../components/CatalogCard";
 import { Book, CatalogueBook } from "../../types/Book";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -75,7 +76,8 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
 
   const [searchQ, setSearchQ] = useState<string>("");
   const [books, setBooks] = useState<CatalogueBook[]>([]);
-  useEffect(() => {
+  
+  useFocusEffect( React.useCallback(() => {
     const fetchBooks = async () => {
       let bookshopId: number;
       const fetchShop = async () => {
@@ -125,7 +127,7 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
     };
 
     fetchBooks();
-  }, []);
+  }, []));
 
   const onChangeSearch = (e: string) => {
     setSearchQ(e);
@@ -145,6 +147,23 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
     const updatedBooks = books.filter((book) => book.id !== id);
     setBooks(updatedBooks);
   };
+
+  const updateBookFromList = async (id: number) => {
+    try {
+      const res = await axios.delete(
+        `http://10.7.82.109:3000/v1/BookShopCatalog/${id}`
+      );
+      if (res.data.data.message == "Bookshop catalog deleted successfuly") {
+        alert("Book Deleted successfuly");
+      }
+    } catch (error) {
+      alert(error);
+    }
+    const updatedBooks = books.filter((book) => book.id !== id);
+    setBooks(updatedBooks);
+  };
+
+
 
   const renderBook = ({ item }: { item: CatalogueBook }) => (
     <View style={{ marginBottom: 30 }}>

@@ -17,7 +17,7 @@ interface CardProps {
   theme: any;
   book: CatalogueBook;
   navigation?: any;
-  removeBook: (id:number)=>void;
+  removeBook: (id: number) => void;
 }
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
@@ -149,7 +149,7 @@ export default function CatalogCard(props: CardProps) {
           <Button
             style={styles.button}
             onPress={() => {
-              nav.navigate("UpdateBook");
+              nav.navigate("UpdateBook", {theme:theme, id: book.id});
             }}
           >
             Update

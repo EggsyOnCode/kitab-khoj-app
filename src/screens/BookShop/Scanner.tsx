@@ -67,6 +67,23 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [author, setauthor] = useState("");
   const [iban, setiban] = useState("");
 
+
+  const checkForDuplicate =async (title: string) => {
+    const res = await axios.get(
+      `http://127.0.0.1:3000/v1/book?searchQuery=${title}`
+    );
+
+    if(res.data.data.result.length!=0){
+      alert("Book already exists")
+      setTitle(res.data.data.result[0].title);
+      setauthor(res.data.data.result[0].author);
+      setiban(res.data.data.result[0].iban);
+
+      return true
+    }
+    return false
+  }
+
   useEffect(() => {
     if (words) {
       const arrayOfStrings = words?.split("\n");
@@ -81,6 +98,9 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
           setTitle(res.data.title);
           setauthor(res.data.author);
           setiban(res.data.iban);
+
+          await checkForDuplicate(title);
+          
         } catch (error) {
           // Handle error
           console.error("Error:", error);
