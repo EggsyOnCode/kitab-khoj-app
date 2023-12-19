@@ -74,7 +74,7 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
   );
 
   const [searchQ, setSearchQ] = useState<string>("");
-  const [books,setBooks] = useState<CatalogueBook[]>([])
+  const [books, setBooks] = useState<CatalogueBook[]>([]);
   useEffect(() => {
     const fetchBooks = async () => {
       let bookshopId: number;
@@ -92,7 +92,7 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
         }
       };
       await fetchShop();
-      
+
       const fetchData = async () => {
         const catalogRes = await axios.get(
           `http://10.7.82.109:3000/v1/BookShopCatalog/${bookshopId}`,
@@ -103,25 +103,27 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
           }
         );
 
-        const catalogueBooks: CatalogueBook[] = catalogRes.data.data.result.map((item: any) => {
-          return {
-            title: item.Book.title,
-            author: item.Book.author,
-            price: item.unit_price,
-            genre: item.Book.genres,
-            used: item.used,
-            publisher: item.Book.publisher,
-            id: item.id
-          };
-        });
+        const catalogueBooks: CatalogueBook[] = catalogRes.data.data.result.map(
+          (item: any) => {
+            return {
+              title: item.Book.title,
+              author: item.Book.author,
+              price: item.unit_price,
+              genre: item.Book.genres,
+              used: item.used,
+              publisher: item.Book.publisher,
+              id: item.id,
+            };
+          }
+        );
 
         console.log(catalogueBooks);
-        setBooks(catalogueBooks)
+        setBooks(catalogueBooks);
       };
 
       fetchData();
     };
-    
+
     fetchBooks();
   }, []);
 
@@ -129,26 +131,41 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
     setSearchQ(e);
   };
 
-  const removeBookFromList = (id: number) => {
+  const removeBookFromList = async(id: number) => {
+    try {
+      const res = await axios.delete(
+        `http://10.7.82.109:3000/v1/BookShopCatalog/${id}`
+      );
+      if(res.data.data.message=="Bookshop catalog deleted successfuly"){
+        alert("Book Deleted successfuly")
+      }
+    } catch (error) {
+      alert(error)
+    }
     const updatedBooks = books.filter((book) => book.id !== id);
     setBooks(updatedBooks);
   };
 
   const renderBook = ({ item }: { item: CatalogueBook }) => (
     <View style={{ marginBottom: 30 }}>
-      <CatalogCard theme={theme} book={item} navigation={navigation}  removeBook={removeBookFromList}/>
+      <CatalogCard
+        theme={theme}
+        book={item}
+        navigation={navigation}
+        removeBook={removeBookFromList}
+      />
     </View>
   );
   return (
     <SafeAreaView style={{ flexGrow: 1 }}>
       <View style={styles.container}>
-        <Text variant="headlineLarge" style={styles.title}>
-          View/Edit
-        </Text>
-        <Text variant="headlineLarge" style={styles.title}>
-          Book Catalogue
-        </Text>
         <ScrollView contentContainerStyle={styles.contentContainer}>
+          <Text variant="headlineLarge" style={styles.title}>
+            View/Edit
+          </Text>
+          <Text variant="headlineLarge" style={styles.title}>
+            Book Catalogue
+          </Text>
           <Searchbar
             placeholder="Search Catalogue"
             onChangeText={onChangeSearch}
