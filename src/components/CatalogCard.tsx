@@ -9,13 +9,13 @@ import {
   Dialog,
   Portal,
 } from "react-native-paper";
-import { Book } from "../types/Book";
+import { Book, CatalogueBook } from "../types/Book";
 import { ScrollView } from "react-native-gesture-handler";
 const screenWidth = Dimensions.get("window").width;
 
 interface CardProps {
   theme: any;
-  book: Book;
+  book: CatalogueBook;
   navigation?: any;
 }
 
@@ -123,7 +123,7 @@ export default function CatalogCard(props: CardProps) {
           </View>
 
           <Text style={styles.infoText}>Author: {book.author}</Text>
-          <Text style={styles.infoText}>Publisher: {book.pub}</Text>
+          <Text style={styles.infoText}>Publisher: {book.publisher}</Text>
 
           <Text style={styles.usedText}>
             Used or not? {book.used ? "Yes" : "No"}

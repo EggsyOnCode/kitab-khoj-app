@@ -7,11 +7,13 @@ import {
   Image,
   ActivityIndicator,
   ScrollView,
+  Modal,
 } from "react-native";
-import { Button, Text, TextInput, withTheme, Chip } from "react-native-paper";
+import { Button, Text, TextInput, withTheme, Chip, Snackbar } from "react-native-paper";
 import TextComp from "../../components/Text";
 import PickerDisplay from "../../components/Text";
-
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -19,18 +21,12 @@ interface props {
   navigation: any;
   theme: any;
   //props title: pTitle
-  pTitle: string | null;
-  pAuthor: string | null;
-  pIban: string | null;
+  route: any;
 }
 
-const BookAttributes: React.FC<props> = ({
-  theme,
-  navigation,
-  pIban,
-  pAuthor,
-  pTitle,
-}) => {
+const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
+  const { pTitle, pAuthor, pIban } = route.params;
+
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
@@ -88,9 +84,9 @@ const BookAttributes: React.FC<props> = ({
     [theme]
   );
 
-  const [title, setTitle] = useState<string>("");
-  const [iban, setIban] = useState<string>("");
-  const [author, setAuthor] = useState<string>("");
+  const [title, setTitle] = useState<string>(pTitle);
+  const [iban, setIban] = useState<string>(pIban);
+  const [author, setAuthor] = useState<string>(pAuthor);
   const [price, setPrice] = useState<string>("0");
   const [publisher, setPublisher] = useState<string>("");
   const [categories, setCategories] = useState<string>("");
@@ -99,6 +95,7 @@ const BookAttributes: React.FC<props> = ({
   const [used, setUsed] = useState<string>("false");
 
   const handleBookTitle = (text: string) => setTitle(text);
+  const [proc, setProc] = useState<boolean>(false);
   const handleIban = (text: string) => setIban(text);
   const handleAuthor = (text: string) => setAuthor(text);
   const handlePrice = (text: string) => setPrice(text);
@@ -119,17 +116,79 @@ const BookAttributes: React.FC<props> = ({
   const handleUsedChange = (value: any) => {
     setUsed(value);
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Logic for handling form submission
-    console.log("Submitting form...");
-    console.log("Title:", title);
-    console.log("IBAN:", iban);
-    console.log("Author:", author);
-    console.log("Price:", price);
-    console.log("Publisher:", publisher);
-    console.log("Categories:", categories);
-    // Add further logic to handle form submission
+    setProc(true);
+    console.log("Creating the entries....");
+    console.log("title: ", title);
+    console.log("author: ", author);
+    console.log("iban: ", iban);
+    console.log("categories: ", categoryChips);
+    console.log("categories: ", publisher);
+
+    let bookId;
+    let bookshopId: string;
+    const fetchData = async () => {
+      const shop = await AsyncStorage.getItem("shopData");
+      if (shop) {
+        const parsedShop = JSON.parse(shop);
+        bookshopId = parsedShop.bookshop_id;
+        bookshopId.toString();
+        console.log("shop is :", bookshopId);
+
+        // Handle parsedShop
+      } else {
+        alert("shop data couldn't be fetched");
+      }
+    };
+    await fetchData();
+    const createBook = async () => {
+      const book = {
+        title: title,
+        author: author,
+        iban: iban,
+        publisher: publisher,
+        genres: categoryChips,
+      };
+
+      const bookRes = await axios.post("http:/10.7.82.109:3000/v1/book", book, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      bookId = bookRes?.data?.data?.result?.id;
+      console.log("bookID: ", bookId);
+
+      const shopCatalogue = {
+        book_id: bookId,
+        bookshop_id: bookshopId,
+        in_stock: inStock,
+        unit_price: price,
+        used: used,
+      };
+
+      const catalogRes = await axios.post(
+        "http:/10.7.82.109:3000/v1/BookShopCatalog",
+        shopCatalogue,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("catalogue maybe");
+      console.log(catalogRes?.data?.data?.result?.id);
+    };
+
+    await createBook();
+    setProc(false);
   };
+
+  // useEffect(() => {
+  //   alert(`${pTitle} ${pAuthor} ${pIban}`);
+  // }, []);
 
   return (
     <View style={styles.container}>
@@ -188,7 +247,7 @@ const BookAttributes: React.FC<props> = ({
             style={styles.input}
             // Theme configurations
           />
-          <Text style={{marginBottom:10, alignItems: "flex-start"}}>
+          <Text style={{ marginBottom: 10, alignItems: "flex-start" }}>
             Used Or not
           </Text>
           <Picker
@@ -198,7 +257,7 @@ const BookAttributes: React.FC<props> = ({
               { value: "true", text: "True" },
             ]}
             style={{
-              width: windowWidth*0.8,
+              width: windowWidth * 0.8,
               borderRadius: 5,
               borderColor: theme.colors.sec2,
               backgroundColor: theme.colors.textInput,
@@ -251,6 +310,23 @@ const BookAttributes: React.FC<props> = ({
         <Button style={styles.button} onPress={handleSubmit}>
           <Text variant="headlineSmall">Publish</Text>
         </Button>
+        <Modal
+          transparent={true}
+          animationType="none"
+          visible={proc}
+          onRequestClose={() => setProc(false)}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <ActivityIndicator size="large" color="#ffffff" />
+          </View>
+        </Modal>
       </ScrollView>
     </View>
   );

@@ -1,5 +1,6 @@
 import { View, StyleSheet, Dimensions, Modal } from "react-native";
 import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Button,
   Avatar,
@@ -121,11 +122,11 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
   };
 
   useEffect(() => {
-    const nav = ()=>{
-      if (canNav){
-        navigation.navigate("BookShopHome")
+    const nav = () => {
+      if (canNav) {
+        navigation.navigate("BookShopHome");
       }
-    }
+    };
 
     nav();
   }, [canNav]);
@@ -203,7 +204,19 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
       }
 
       setProc(false);
+      try {
+        const shop = {
+          bookshop_id: bizId,
+          shopkeeper_id: shopkeeper_id,
+        };
+
+        const storeObj = JSON.stringify(shop);
+        await AsyncStorage.setItem("shopData", storeObj);
+      } catch (error) {
+        alert(error);
+      }
       setcanNav(true);
+
       // navigation.navigate("BookShopHome");
     } catch (mainError) {
       console.error("Main Process Error:", mainError);

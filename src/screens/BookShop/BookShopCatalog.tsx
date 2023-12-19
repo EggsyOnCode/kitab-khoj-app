@@ -1,5 +1,12 @@
-import { View, StyleSheet, Dimensions, SafeAreaView, FlatList, ScrollView } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  SafeAreaView,
+  FlatList,
+  ScrollView,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Button,
@@ -10,7 +17,9 @@ import {
 } from "react-native-paper";
 import { books } from "../../types/const/data";
 import CatalogCard from "../../components/CatalogCard";
-import { Book } from "../../types/Book";
+import { Book, CatalogueBook } from "../../types/Book";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -30,7 +39,7 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
           backgroundColor: theme.colors.primary,
           padding: 20,
           flexGrow: 1,
-          flex:1,
+          flex: 1,
           paddingTop: 60,
         },
         button: {
@@ -59,20 +68,70 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
           justifyContent: "center",
           alignItems: "center",
         },
-        contentContainer: {
-        },
+        contentContainer: {},
       }),
     [theme]
   );
+
   const [searchQ, setSearchQ] = useState<string>("");
+  const [books,setBooks] = useState<CatalogueBook[]>([])
+  useEffect(() => {
+    const fetchBooks = async () => {
+      let bookshopId: number;
+      const fetchShop = async () => {
+        const shop = await AsyncStorage.getItem("shopData");
+        if (shop) {
+          const parsedShop = JSON.parse(shop);
+          bookshopId = parsedShop.bookshop_id;
+          bookshopId.toString();
+          console.log("shop is :", bookshopId);
+
+          // Handle parsedShop
+        } else {
+          alert("shop data couldn't be fetched");
+        }
+      };
+      await fetchShop();
+      
+      const fetchData = async () => {
+        const catalogRes = await axios.get(
+          `http://10.7.82.109:3000/v1/BookShopCatalog/${bookshopId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const catalogueBooks: CatalogueBook[] = catalogRes.data.data.result.map((item: any) => {
+          return {
+            title: item.Book.title,
+            author: item.Book.author,
+            price: item.unit_price,
+            genre: item.Book.genres,
+            used: item.used,
+            publisher: item.Book.publisher,
+            id: item.id
+          };
+        });
+
+        console.log(catalogueBooks);
+        setBooks(catalogueBooks)
+      };
+
+      fetchData();
+    };
+    
+    fetchBooks();
+  }, []);
 
   const onChangeSearch = (e: string) => {
     setSearchQ(e);
   };
 
-  const renderBook = ({ item }: { item: Book }) => (
+  const renderBook = ({ item }: { item: CatalogueBook }) => (
     <View style={{ marginBottom: 30 }}>
-      <CatalogCard theme={theme} book={item} navigation={navigation}/>
+      <CatalogCard theme={theme} book={item} navigation={navigation} />
     </View>
   );
   return (
@@ -97,7 +156,7 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
               renderItem={renderBook}
               horizontal={false}
               style={{ marginBottom: 20 }}
-              keyExtractor={(item) => item.title.toString()} // Assuming each book has an 'id' property
+              keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
             />
           </View>
         </ScrollView>

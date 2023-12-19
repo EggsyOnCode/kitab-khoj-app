@@ -62,22 +62,32 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [image, setImage] = useState<any>();
   const [words, setWords] = useState<string | null>(null);
   const [proc, setProc] = useState<boolean>(false);
-  useEffect(() => {
-    const arrayOfStrings = words?.split("\n");
-    const fetchBookAttr = async () => {
-      try {
-        const res = await axios.get(
-          `http://10.7.82.109:5000/process_text?txt=${arrayOfStrings}`
-        );
-        // Handle the response
-        console.log(res.data);
-      } catch (error) {
-        // Handle error
-        console.error("Error:", error);
-      }
-    };
 
-    fetchBookAttr();
+  const [title, setTitle] = useState("");
+  const [author, setauthor] = useState("");
+  const [iban, setiban] = useState("");
+
+  useEffect(() => {
+    if (words) {
+      const arrayOfStrings = words?.split("\n");
+      const fetchBookAttr = async () => {
+        try {
+          const res = await axios.get(
+            `http://10.7.82.109:5000/process_text?txt=${arrayOfStrings}`
+          );
+          // Handle the response
+          console.log(res.data);
+          console.log("author: ", res.data.author);
+          setTitle(res.data.title);
+          setauthor(res.data.author);
+          setiban(res.data.iban);
+        } catch (error) {
+          // Handle error
+          console.error("Error:", error);
+        }
+      };
+      fetchBookAttr();
+    }
   }, [words]);
 
   const apiCall = async (img: any) => {
@@ -131,7 +141,9 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       </View>
       <Button
         mode="contained"
-        onPress={() => launchCamera()}
+        onPress={() => {
+          launchCamera();
+        }}
         style={styles.button}
         icon="camera"
         labelStyle={{ fontSize: 20, color: theme.colors.black }}
@@ -163,11 +175,12 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
                   style={styles.button}
                   onPress={() => {
                     navigation.navigate("BookAttributes", {
+                      screen: "BookAttributes",
                       theme: theme,
                       navigation: navigation,
-                      title: "DaVinci Code",
-                      author: "dan brown",
-                      iban: "12333",
+                      pTitle: title,
+                      pAuthor: author,
+                      pIban: iban,
                     });
                   }}
                 >

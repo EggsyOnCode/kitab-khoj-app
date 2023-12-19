@@ -1,8 +1,9 @@
 import { View, Dimensions, StyleSheet } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { withTheme, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookHomeButton from "../../components/buttons/BookHomeButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
@@ -56,6 +57,20 @@ const BookShopHome: React.FC<props> = ({ theme, navigation }) => {
       }),
     [theme]
   );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const shop = await AsyncStorage.getItem("shopData");
+      if (shop) {
+        const parsedShop = JSON.parse(shop);
+        alert(`${parsedShop.bookshop_id}  ${parsedShop.shopkeeper_id}`);
+        // Handle parsedShop
+      } else {
+        alert("shop data couldn't be fetched");
+      }
+    };
+    fetchData()
+  }, []);
 
   return (
     <View style={styles.container}>
