@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
-import { Text, Searchbar, withTheme } from "react-native-paper";
+import {
+  Text,
+  Searchbar,
+  withTheme,
+  SegmentedButtons,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookCard from "../../components/BookCard";
 import { Book, CustomerCatalog } from "../../types/Book";
@@ -16,6 +21,7 @@ interface CustomerHomeProps {
 const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
   const [searchQ, setSearchQ] = useState<string>("");
   const [books, setBooks] = useState<CustomerCatalog[]>([]);
+  const [searchFilter, setSearchFilter] = React.useState("");
 
   const styles = StyleSheet.create({
     container: {
@@ -41,6 +47,9 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
     },
     contentContainer: {
       paddingVertical: 35,
+    },
+    button: {
+      backgroundColor: theme.colors.green,
     },
   });
 
@@ -106,6 +115,55 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
           value={searchQ}
           style={styles.search}
         />
+        <View style={{ marginBottom: 20 }}>
+          <SegmentedButtons
+            value={searchFilter}
+            onValueChange={setSearchFilter}
+            buttons={[
+              {
+                value: "title",
+                label: "Title",
+                uncheckedColor: theme.colors.primary,
+                style: styles.button,
+                checkedColor: theme.colors.red,
+              },
+              {
+                value: "author",
+                label: "Author",
+                uncheckedColor: theme.colors.primary,
+                style: styles.button,
+                checkedColor: theme.colors.red,
+              },
+              {
+                value: "publisher",
+                label: "Publisher",
+                uncheckedColor: theme.colors.primary,
+                style: styles.button,
+                checkedColor: theme.colors.red,
+              },
+            ]}
+          />
+          <SegmentedButtons
+            value={searchFilter}
+            onValueChange={setSearchFilter}
+            buttons={[
+              {
+                value: "iban",
+                label: "IBAN",
+                uncheckedColor: theme.colors.primary,
+                style: styles.button,
+                checkedColor: theme.colors.red,
+              },
+              {
+                value: "genre",
+                label: "Genre",
+                uncheckedColor: theme.colors.primary,
+                style: styles.button,
+                checkedColor: theme.colors.red,
+              },
+            ]}
+          />
+        </View>
         <View style={styles.cardContainer}>
           <FlatList
             data={books}
