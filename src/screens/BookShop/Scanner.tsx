@@ -64,7 +64,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [proc, setProc] = useState<boolean>(false);
   useEffect(() => {
     const arrayOfStrings = words?.split("\n");
-    const fetchBookAttr = async ()=>{
+    const fetchBookAttr = async () => {
       try {
         const res = await axios.get(
           `http://10.7.82.109:5000/process_text?txt=${arrayOfStrings}`
@@ -75,8 +75,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
         // Handle error
         console.error("Error:", error);
       }
-      
-    }
+    };
 
     fetchBookAttr();
   }, [words]);
@@ -158,10 +157,22 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
           )}
           {!proc ? (
             words && (
-              <View style={{padding:20}}>
-                <Text style={{ color: "red", marginBottom: 6 }}>
-                  {words}
-                </Text>
+              <View style={{ padding: 20 }}>
+                <Text style={{ color: "red", marginBottom: 6 }}>{words}</Text>
+                <Button
+                  style={styles.button}
+                  onPress={() => {
+                    navigation.navigate("BookAttributes", {
+                      theme: theme,
+                      navigation: navigation,
+                      title: "DaVinci Code",
+                      author: "dan brown",
+                      iban: "12333",
+                    });
+                  }}
+                >
+                  <Text variant="headlineSmall">Update</Text>
+                </Button>
               </View>
             )
           ) : (
