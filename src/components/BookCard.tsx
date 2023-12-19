@@ -9,7 +9,7 @@ interface CardProps {
   book: CustomerCatalog;
 }
 
-const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
+const LeftContent = (props: any) => <Avatar.Icon {...props} icon="shopping" />;
 const RightContent = (props: any) => <Avatar.Icon {...props} icon="menu" />;
 
 export default function BookCard(props: CardProps) {

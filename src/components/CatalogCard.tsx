@@ -20,7 +20,7 @@ interface CardProps {
   removeBook: (id: number) => void;
 }
 
-const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
+const LeftContent = (props: any) => <Avatar.Icon {...props} icon="shopping" />;
 const RightContent = (props: any) => <Avatar.Icon {...props} icon="menu" />;
 
 export default function CatalogCard(props: CardProps) {
