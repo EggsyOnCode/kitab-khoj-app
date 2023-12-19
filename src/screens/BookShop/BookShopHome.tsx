@@ -6,12 +6,12 @@ import BookHomeButton from "../../components/buttons/BookHomeButton";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-interface props{
-    theme: any,
-    nav: any
+interface props {
+  theme: any;
+  navigation: any;
 }
 
-const BookShopHome:React.FC<props> = ({theme, nav}) => {
+const BookShopHome: React.FC<props> = ({ theme, navigation }) => {
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
@@ -58,30 +58,32 @@ const BookShopHome:React.FC<props> = ({theme, nav}) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 , backgroundColor: theme.colors.sec2}}>
-      <View style={styles.container}>
-        <Text variant="headlineLarge" style={styles.title}>
-          Manage Your
-        </Text>
-        <Text variant="headlineLarge" style={styles.title}>
-          Book Repository
-        </Text>
-        <View style={{ justifyContent: "center" }}>
-          <BookHomeButton
-            title="Add a Book"
-            navigation={nav}
-            theme={theme}
-            handleButton={() => {nav.navigate("Scanner")}}
-          ></BookHomeButton>
-          <BookHomeButton
-            title="View Catalogue"
-            navigation={nav}
-            theme={theme}
-            handleButton={() => {nav.navigate("BookShopCatalog")}}
-          ></BookHomeButton>
-        </View>
+    <View style={styles.container}>
+      <Text variant="headlineLarge" style={styles.title}>
+        Manage Your
+      </Text>
+      <Text variant="headlineLarge" style={styles.title}>
+        Book Repository
+      </Text>
+      <View style={{ justifyContent: "center" }}>
+        <BookHomeButton
+          title="Add a Book"
+          navigation={navigation}
+          theme={theme}
+          handleButton={() => {
+            navigation?.navigate("Scanner");
+          }}
+        ></BookHomeButton>
+        <BookHomeButton
+          title="View Catalogue"
+          navigation={navigation}
+          theme={theme}
+          handleButton={() => {
+            navigation.navigate("BookShopCatalog");
+          }}
+        ></BookHomeButton>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

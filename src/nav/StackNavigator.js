@@ -54,7 +54,7 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="RegisterBookShop">
+    <Stack.Navigator initialRouteName="BookShopHome">
       <Stack.Screen
         name="BookShopHome"
         component={BookShopHome}
