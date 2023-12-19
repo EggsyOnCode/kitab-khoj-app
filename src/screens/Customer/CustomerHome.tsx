@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, TouchableOpacity } from "react-native";
 import {
   Text,
   Searchbar,
   withTheme,
   SegmentedButtons,
+  Button,
+  Avatar,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookCard from "../../components/BookCard";
@@ -14,6 +16,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 interface CustomerHomeProps {
   theme: any;
 }
@@ -40,6 +44,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
     search: {
       backgroundColor: theme.colors.green,
       marginBottom: 20,
+      width: windowWidth * 0.74,
     },
     cardContainer: {
       justifyContent: "center",
@@ -49,6 +54,9 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
       paddingVertical: 35,
     },
     button: {
+      backgroundColor: theme.colors.green,
+    },
+    button2: {
       backgroundColor: theme.colors.green,
     },
   });
@@ -103,18 +111,32 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
     setSearchQ(e);
   };
 
+  const handleSearch =async () => {
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text variant="displayMedium" style={styles.title}>
           Browse Our Catalogues
         </Text>
-        <Searchbar
-          placeholder="Search Books"
-          onChangeText={onChangeSearch}
-          value={searchQ}
-          style={styles.search}
-        />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            alignContent: "center",
+          }}
+        >
+          <Searchbar
+            placeholder="Search Books"
+            onChangeText={onChangeSearch}
+            value={searchQ}
+            style={styles.search}
+          />
+          <TouchableOpacity onPress={async()=>handleSearch}>
+            <Avatar.Icon icon="arrow-up" />;
+          </TouchableOpacity>
+        </View>
         <View style={{ marginBottom: 20 }}>
           <SegmentedButtons
             value={searchFilter}
