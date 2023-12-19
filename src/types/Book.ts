@@ -18,6 +18,18 @@ export type CatalogueBook = {
   publisher: string;
 };
 
+export type CustomerCatalog = {
+  id: number;
+  title: string;
+  author: string;
+  price: number;
+  genre: String[];
+  used: boolean;
+  publisher: string;
+  store: string;
+  store_location: string
+};
+
 export type BookShop = {
   name: string;
   location: string;

@@ -1,12 +1,12 @@
 import { StyleSheet, View, Dimensions, FlatList } from "react-native";
 import React from "react";
 import { Avatar, Button, Card, Text, Chip } from "react-native-paper";
-import { Book } from "../types/Book";
+import { Book, CustomerCatalog } from "../types/Book";
 const screenWidth = Dimensions.get("window").width;
 
 interface CardProps {
   theme: any;
-  book: Book;
+  book: CustomerCatalog;
 }
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
@@ -63,8 +63,8 @@ export default function BookCard(props: CardProps) {
   return (
     <Card style={styles.card}>
       <Card.Title
-        title={book.seller.name}
-        subtitle={book.seller.location}
+        title={book.store}
+        subtitle={book.store_location}
         left={LeftContent}
       />
       <Card.Cover
@@ -75,7 +75,7 @@ export default function BookCard(props: CardProps) {
       <Card.Content>
         <Text style={styles.title}>Title: {book.title}</Text>
         <Text style={styles.infoText}>Author: {book.author}</Text>
-        <Text style={styles.infoText}>Publisher: {book.pub}</Text>
+        <Text style={styles.infoText}>Publisher: {book.publisher}</Text>
 
         <Text style={styles.usedText}>
           Used or not? {book.used ? "Yes" : "No"}
