@@ -17,6 +17,7 @@ interface CardProps {
   theme: any;
   book: CatalogueBook;
   navigation?: any;
+  removeBook: (id:number)=>void;
 }
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="folder" />;
@@ -26,6 +27,7 @@ export default function CatalogCard(props: CardProps) {
   const theme = props.theme;
   const book = props.book;
   const nav = props.navigation;
+  const removeBook = props.removeBook;
 
   const styles = React.useMemo(
     () =>
@@ -80,8 +82,9 @@ export default function CatalogCard(props: CardProps) {
     setVisible(true);
   };
 
-  const handleBookRemoval = ()=>{
+  const handleBookRemoval = (id:number)=>{
     console.log("book to be deleted");
+    removeBook(id)
     
   }
 
@@ -96,7 +99,7 @@ export default function CatalogCard(props: CardProps) {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={handleBookRemoval}>OK</Button>
+            <Button onPress={()=>{handleBookRemoval(book.id)}}>OK</Button>
             <Button onPress={hideDialog}>QUIT</Button>
           </Dialog.Actions>
         </Dialog>

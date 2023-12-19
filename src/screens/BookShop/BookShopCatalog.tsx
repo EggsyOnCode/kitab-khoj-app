@@ -129,9 +129,14 @@ const BookShopCatalog: React.FC<props> = ({ theme, navigation }) => {
     setSearchQ(e);
   };
 
+  const removeBookFromList = (id: number) => {
+    const updatedBooks = books.filter((book) => book.id !== id);
+    setBooks(updatedBooks);
+  };
+
   const renderBook = ({ item }: { item: CatalogueBook }) => (
     <View style={{ marginBottom: 30 }}>
-      <CatalogCard theme={theme} book={item} navigation={navigation} />
+      <CatalogCard theme={theme} book={item} navigation={navigation}  removeBook={removeBookFromList}/>
     </View>
   );
   return (
