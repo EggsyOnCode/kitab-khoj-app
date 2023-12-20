@@ -17,21 +17,25 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookCard from "../../components/BookCard";
-import { Book, CustomerCatalog } from "../../types/Book";
+import { Book, CustomerCatalog, OrderedBook } from "../../types/Book";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { book } from "../../types/const/data";
+import OrderCard from "../../components/OrderCard";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 interface CustomerOrdersProps {
   theme: any;
-  navigation: any
+  navigation: any;
 }
 
-const CustomerOrders: React.FC<CustomerOrdersProps> = ({ theme, navigation }) => {
+const CustomerOrders: React.FC<CustomerOrdersProps> = ({
+  theme,
+  navigation,
+}) => {
   const [searchQ, setSearchQ] = useState<string>("");
   const [books, setBooks] = useState<CustomerCatalog[]>([]);
   const [searchFilter, setSearchFilter] = React.useState("");
@@ -73,24 +77,43 @@ const CustomerOrders: React.FC<CustomerOrdersProps> = ({ theme, navigation }) =>
     },
   });
 
+  const [orderedBooks, setOrderedBooks] = useState<OrderedBook[] | null>();
+
+  const fetchCustomerID = async () => {
+    try {
+      const shop = await AsyncStorage.getItem("customer");
+      if (shop) {
+        const parsedShop = JSON.parse(shop);
+        const customerId = parsedShop.customer_id.toString(); // Update the customerId
+        console.log("customer is :", customerId);
+        return customerId;
+      } else {
+        alert("customer data couldn't be fetched");
+      }
+    } catch (error) {
+      console.error("Error fetching customer ID:", error);
+    }
+  };
+
+  const fetchBookData = async (catalogId: number) => {
+    try {
+      const res = await axios.get(
+        `http://10.7.82.109:3000/v1/BookShopCatalog/item/${catalogId}`
+      );
+
+      return res.data.data.result[0].Book;
+    } catch (error) {}
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-      // const fetchCus = async () => {
-      //   const cus = await AsyncStorage.getItem("customer");
-      //   if (cus) {
-      //     const parsedShop = JSON.parse(cus);
-      //     alert(`${parsedShop.customer_id}`);
-      //     // Handle parsedShop
-      //   } else {
-      //     alert("customer data couldn't be fetched");
-      //   }
-      // };
-      // fetchCus();
-
       const fetchData = async () => {
         try {
-          const catalogRes = await axios.get(
-            "http://10.7.82.109:3000/v1/BookShopCatalog",
+          const cusID = await fetchCustomerID();
+          console.log("cus is: ", cusID);
+
+          const orderRes = await axios.get(
+            `http://10.7.82.109:3000/v1/order/customer/${cusID}`,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -98,23 +121,24 @@ const CustomerOrders: React.FC<CustomerOrdersProps> = ({ theme, navigation }) =>
             }
           );
 
-          const catalogueBooks: CustomerCatalog[] =
-            catalogRes.data.data.result.map((item: any) => {
+          const orderedBooksPromises = orderRes.data.data.result.map(
+            async (item: any) => {
+              const bookData = await fetchBookData(item.bookshopcatalog_id);
               return {
-                title: item.Book.title,
-                author: item.Book.author,
-                price: item.unit_price,
-                genre: item.Book.genres,
-                used: item.used,
-                publisher: item.Book.publisher,
                 id: item.id,
-                store: item.BookShop?.name,
-                store_location: item.BookShop?.location,
+                title: bookData.title,
+                author: bookData.author,
+                price: item.price,
+                publisher: bookData.publisher,
+                store: item.BookShop.name,
+                store_location: item.BookShop.location,
               };
-            });
+            }
+          );
 
-          console.log(catalogueBooks);
-          setBooks(catalogueBooks);
+          const orderedBooks = await Promise.all(orderedBooksPromises);
+          console.log(orderedBooks);
+          setOrderedBooks(orderedBooks);
         } catch (error) {
           // Handle errors here
           console.error("Error fetching data:", error);
@@ -125,13 +149,11 @@ const CustomerOrders: React.FC<CustomerOrdersProps> = ({ theme, navigation }) =>
     }, [])
   );
 
-  const renderBook = ({ item }: { item: CustomerCatalog }) => (
+  const renderBook = ({ item }: { item: OrderedBook }) => (
     <View style={{ marginBottom: 30 }}>
-      <BookCard theme={theme} book={item} />
+      <OrderCard theme={theme} book={item} />
     </View>
   );
-
-
 
   return (
     <View style={styles.container}>
@@ -140,23 +162,13 @@ const CustomerOrders: React.FC<CustomerOrdersProps> = ({ theme, navigation }) =>
           Browse Your Orders
         </Text>
         <View style={styles.cardContainer}>
-          {filteredBooks ? (
-            <FlatList
-              data={filteredBooks}
-              renderItem={renderBook}
-              horizontal={false}
-              style={{ marginBottom: 20 }}
-              keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
-            />
-          ) : (
-            <FlatList
-              data={books}
-              renderItem={renderBook}
-              horizontal={false}
-              style={{ marginBottom: 20 }}
-              keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
-            />
-          )}
+          <FlatList
+            data={orderedBooks}
+            renderItem={renderBook}
+            horizontal={false}
+            style={{ marginBottom: 20 }}
+            keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
+          />
         </View>
       </ScrollView>
     </View>

@@ -30,6 +30,17 @@ export type CustomerCatalog = {
   store_location: string
 };
 
+export type OrderedBook = {
+  //rep order num
+  id: number,
+  title: string,
+  author: string,
+  price: string,
+  publisher: string
+  store: string,
+  store_location : string
+}
+
 export type BookShop = {
   name: string;
   location: string;
