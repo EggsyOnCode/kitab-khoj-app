@@ -22,6 +22,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { book } from "../../types/const/data";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -34,6 +35,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
   const [books, setBooks] = useState<CustomerCatalog[]>([]);
   const [searchFilter, setSearchFilter] = React.useState("");
   const [processing, setProcessing] = useState<boolean>(false);
+  const [filteredBooks, setFilteredBooks] = useState<CustomerCatalog[] | null>(null);
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -211,6 +213,25 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
     }
   };
 
+  const multiParamSearch = (searchText: string) => {
+    const filtered = books.filter((book) => {
+      // Apply search criteria for author, title, publisher, and genre
+      console.log(book);
+      return (
+        book.author.toLowerCase().includes(searchText.toLowerCase()) ||
+        book.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        book.publisher.toLowerCase().includes(searchText.toLowerCase()) ||
+        book.genre?.some((g) =>
+          g.toLowerCase().includes(searchText.toLowerCase())
+        )
+      );
+    });
+    console.log(filteredBooks);
+
+    // Update the filtered results
+    setFilteredBooks(filtered);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -230,7 +251,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
             value={searchQ}
             style={styles.search}
           />
-          <TouchableOpacity onPress={handleSearch}>
+          <TouchableOpacity onPress={() => multiParamSearch(searchQ)}>
             {processing ? (
               <ActivityIndicator size="small" color={theme.colors.primary} /> // Display loader when processing is true
             ) : (
@@ -288,13 +309,23 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
           />
         </View>
         <View style={styles.cardContainer}>
-          <FlatList
-            data={books}
-            renderItem={renderBook}
-            horizontal={false}
-            style={{ marginBottom: 20 }}
-            keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
-          />
+          {filteredBooks ? (
+            <FlatList
+              data={filteredBooks}
+              renderItem={renderBook}
+              horizontal={false}
+              style={{ marginBottom: 20 }}
+              keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
+            />
+          ) : (
+            <FlatList
+              data={books}
+              renderItem={renderBook}
+              horizontal={false}
+              style={{ marginBottom: 20 }}
+              keyExtractor={(item) => item.id.toString()} // Assuming each book has an 'id' property
+            />
+          )}
         </View>
       </ScrollView>
     </View>
