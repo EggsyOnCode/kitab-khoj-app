@@ -60,6 +60,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const [image, setImage] = useState<any>();
+  const [imageBase64, setImageBase64] = useState<any>();
   const [words, setWords] = useState<string | null>(null);
   const [proc, setProc] = useState<boolean>(false);
 
@@ -67,22 +68,21 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [author, setauthor] = useState("");
   const [iban, setiban] = useState("");
 
-
-  const checkForDuplicate =async (title: string) => {
+  const checkForDuplicate = async (title: string) => {
     const res = await axios.get(
       `http://127.0.0.1:3000/v1/book?searchQuery=${title}`
     );
 
-    if(res.data.data.result.length!=0){
-      alert("Book already exists")
+    if (res.data.data.result.length != 0) {
+      alert("Book already exists");
       setTitle(res.data.data.result[0].title);
       setauthor(res.data.data.result[0].author);
       setiban(res.data.data.result[0].iban);
 
-      return true
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 
   useEffect(() => {
     if (words) {
@@ -100,7 +100,6 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
           setiban(res.data.iban);
 
           await checkForDuplicate(title);
-          
         } catch (error) {
           // Handle error
           console.error("Error:", error);
@@ -141,9 +140,23 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       });
       if (!result.canceled) {
         setImage(result.assets[0].uri);
-        await apiCall(result.assets[0].base64);
+        setImageBase64(result.assets[0].base64);
+        // await apiCall(result.assets[0].base64);
       }
     } catch (error) {}
+  };
+
+  const sendImage = async () => {
+    // const form = new FormData();
+    // form.append('image', imageBase64);
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const file = new File([blob], "image.jpg", { type: "image/jpeg" }); // Replace 'image.jpg' with your desired filename
+      return file;
+    } catch (error) {
+      console.error("Error making form data:", error);
+    }
   };
 
   return (
@@ -187,7 +200,21 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
               }}
             />
           )}
-          {!proc ? (
+          <Button
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate("BookAttributes", {
+                screen: "BookAttributes",
+                theme: theme,
+                navigation: navigation,
+                pTitle: "Diplomacy",
+                pAuthor: "Henry issinger",
+                pIban: "9824",
+                image: sendImage(),
+              });
+            }}
+          >Update</Button>
+          {/* {!proc ? (
             words && (
               <View style={{ padding: 20 }}>
                 <Text style={{ color: "red", marginBottom: 6 }}>{words}</Text>
@@ -201,6 +228,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
                       pTitle: title,
                       pAuthor: author,
                       pIban: iban,
+                      image: sendImage(),
                     });
                   }}
                 >
@@ -220,7 +248,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
             >
               <ActivityIndicator size="large" color="blue" />
             </View>
-          )}
+          )} */}
         </View>
       </ScrollView>
     </View>

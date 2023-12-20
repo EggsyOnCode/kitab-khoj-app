@@ -1,38 +1,88 @@
-import { View, Text } from 'react-native'
-import {Button} from "react-native-paper"
-import React from 'react'
+import { View, Text } from "react-native";
+import { Button } from "react-native-paper";
+import React from "react";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import auth from "@react-native-firebase/auth";
-
-
-
+import auth, { firebase } from "@react-native-firebase/auth";
+import axios from "axios";
 
 GoogleSignin.configure({
-    webClientId:
+  webClientId:
     "730590305822-hmqgcjgabn4heg094nilmjli35devi1u.apps.googleusercontent.com",
 });
 
+interface props {
+  theme: any;
+  navigation: any;
+}
 
-function GoogleSignIn({theme}: {theme:any}) {
-    async function onGoogleButtonPress() {
-      // Check if your device supports Google Play
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      }).catch((err) => {
-        alert(err);
-      });
+const GoogleSignIn: React.FC<props> = ({ theme, navigation }) => {
+  const getEmail = () => {
+    const user = firebase.auth().currentUser;
+    return user?.email?.toString();
+  };
 
-      // Get the users ID token
-      const { idToken } = await GoogleSignin.signIn();
-      alert("Welcome")
+  const checkRoleDB = async (email: string) => {
+    // const payload = {
+    //   email: email,
+    // };
 
-      // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    // console.log("user's email is ", payload.email);
+    try {
+      const shopRes = await axios.get(
+        `http://10.7.82.109:3000/v1/shopkeeper/access?email=${email}`
+      );
 
-      // Sign-in the user with the credential
-      return auth().signInWithCredential(googleCredential);
+      if (!shopRes.data.data.result) {
+        console.log("not a shopkeeper");
+        try {
+          console.log("cus checking emaiil is ", email);
+          
+          const cusRes = await axios.get(
+            `http://10.7.82.109:3000/v1/Customer/access?email=${email}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!cusRes.data.data.result) {
+            console.log("not a customer");
+          } else {
+            console.log("is a customer");
+            navigation.navigate("CustomerHomeNav");
+          }
+        } catch (cusErr) {
+          console.error("Error checking customer access:", cusErr);
+        }
+      } else {
+        console.log("is a shopkeeper");
+        navigation.navigate("BookShopHome");
+      }
+    } catch (shopErr) {
+      console.error("Error checking shopkeeper access:", shopErr);
+      alert("Error checking shopkeeper access");
     }
-    
+  };
+  async function onGoogleButtonPress() {
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({
+      showPlayServicesUpdateDialog: true,
+    }).catch((err) => {
+      alert(err);
+    });
+
+    // Get the users ID token
+    const { idToken, user } = await GoogleSignin.signIn();
+    checkRoleDB(user.email);
+
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
+
   return (
     <Button
       style={{
@@ -41,12 +91,16 @@ function GoogleSignIn({theme}: {theme:any}) {
         backgroundColor: theme.colors.sec2,
       }}
       onPress={() =>
-        onGoogleButtonPress().then(() => console.log("Signed in with Google!")).catch((err)=>{alert(err)})
+        onGoogleButtonPress()
+          .then(() => console.log("Signed in with Google!"))
+          .catch((err) => {
+            alert(err);
+          })
       }
     >
       Google Sign In
     </Button>
   );
-}
+};
 
-export default GoogleSignIn
+export default GoogleSignIn;

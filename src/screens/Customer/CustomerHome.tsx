@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import {
   Text,
   Searchbar,
@@ -63,6 +69,18 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      // const fetchCus = async () => {
+      //   const cus = await AsyncStorage.getItem("customer");
+      //   if (cus) {
+      //     const parsedShop = JSON.parse(cus);
+      //     alert(`${parsedShop.customer_id}`);
+      //     // Handle parsedShop
+      //   } else {
+      //     alert("customer data couldn't be fetched");
+      //   }
+      // };
+      // fetchCus();
+
       const fetchData = async () => {
         try {
           const catalogRes = await axios.get(
@@ -111,8 +129,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
     setSearchQ(e);
   };
 
-  const handleSearch =async () => {
-  }
+  const handleSearch = async () => {};
 
   return (
     <View style={styles.container}>
@@ -133,7 +150,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
             value={searchQ}
             style={styles.search}
           />
-          <TouchableOpacity onPress={async()=>handleSearch}>
+          <TouchableOpacity onPress={async () => handleSearch}>
             <Avatar.Icon icon="arrow-up" />;
           </TouchableOpacity>
         </View>

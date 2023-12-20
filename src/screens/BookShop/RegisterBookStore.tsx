@@ -14,6 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import axios from "axios";
 import auth, { firebase } from "@react-native-firebase/auth";
+import { Role } from "../../types/const/data";
+import { authStore } from "../../utils/authStore";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -212,6 +214,10 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
 
         const storeObj = JSON.stringify(shop);
         await AsyncStorage.setItem("shopData", storeObj);
+        const role = {
+          role: Role.shopkeeper,
+        };
+        await authStore("role", role);
       } catch (error) {
         alert(error);
       }

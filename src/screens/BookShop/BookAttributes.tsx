@@ -9,7 +9,14 @@ import {
   ScrollView,
   Modal,
 } from "react-native";
-import { Button, Text, TextInput, withTheme, Chip, Snackbar } from "react-native-paper";
+import {
+  Button,
+  Text,
+  TextInput,
+  withTheme,
+  Chip,
+  Snackbar,
+} from "react-native-paper";
 import TextComp from "../../components/Text";
 import PickerDisplay from "../../components/Text";
 import axios from "axios";
@@ -24,7 +31,7 @@ interface props {
 }
 
 const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
-  const { pTitle, pAuthor, pIban } = route.params;
+  const { pTitle, pAuthor, pIban, image } = route.params;
 
   const styles = React.useMemo(
     () =>
@@ -176,9 +183,26 @@ const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
           },
         }
       );
-
       console.log("catalogue maybe");
-      console.log(catalogRes?.data?.data?.result?.id);
+      const catalogId = catalogRes?.data?.data?.result?.id;
+
+      const form = new FormData();
+      form.append("image", image);
+      form.append("catalogId", catalogId);
+
+      try {
+        const uploadResponse = await axios.post(
+          "http://10.7.82.109:3000/v1/BookShopCatalog/book-media",
+          form,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(uploadResponse.data);
+        console.log(catalogRes?.data?.data?.result?.id);
+      } catch (error) {alert("file upload error")}
     };
 
     await createBook();

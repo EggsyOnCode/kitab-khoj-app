@@ -19,9 +19,7 @@ const CustomerHomeNav: React.FC<props> = ({ theme, navigation }) => {
     <CustomerOrders theme={theme} navigation={navigation} />
   );
   const SettingsRoute = () => <BookShopSettings />;
-  const HomeRoute = () => (
-    <CustomerHome books={books} theme={theme} />
-  );
+  const HomeRoute = () => <CustomerHome theme={theme} />;
 
   const [routes] = React.useState([
     {

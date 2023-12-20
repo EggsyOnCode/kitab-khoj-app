@@ -3,8 +3,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../screens/auth/Login";
 import Welcome from "../screens/Welcome";
 import CustomerHome from "../screens/Customer/CustomerHome";
-import { books } from "../types/const/data";
-import { useNavigation } from "@react-navigation/native";
+import { Role, books } from "../types/const/data";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { firebase_auth } from "../utils/firebase";
 import Scanner from "../screens/BookShop/Scanner";
@@ -12,6 +12,7 @@ import RegisterBookStore from "../screens/BookShop/RegisterBookStore";
 import RegisterCustomer from "../screens/Customer/RegisterCustomer";
 import auth from "@react-native-firebase/auth";
 import BookShopHome from "../screens/BookShop/BookShopHome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BookStoreNav from "./BookStoreNav";
 import BookShopCatalog from "../screens/BookShop/BookShopCatalog";
 import UpdateBook from "../screens/BookShop/UpdateBook";
@@ -25,6 +26,8 @@ const StackNavigator = ({ theme }) => {
 
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(false);
+  const [role, setRole] = useState("");
+  const [initRoute, setInitRoute] = useState("Welcome");
 
   // Handle user state changes
   function onAuthStateChanged(user) {
@@ -33,12 +36,67 @@ const StackNavigator = ({ theme }) => {
       setInitializing(false);
     }
   }
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchRole = async () => {
+        try {
+          const rol = await AsyncStorage.getItem("role");
+          if (rol) {
+            const parsedShop = JSON.parse(rol);
+            alert(`${parsedShop.role} ${typeof parsedShop.role}`);
+            setRole(parsedShop.role);
+            if (parsedShop.role === "CUSTOMER") {
+              console.log("setting init route as customer nav");
+              setInitRoute("CustomerHomeNav");
+            } else if (parsedShop.role === "SHOPKEEPER") {
+              console.log("setting init route as bookshop nav");
+              setInitRoute("BookShopHome");
+            } else {
+              console.log("setting init route as welcome");
+              setInitRoute("Welcome");
+            }
+          } else {
+            alert("Role data couldn't be fetched");
+            setRole(null);
+            setInitRoute("Welcome");
+          }
+        } catch (error) {
+          console.error("Error fetching role:", error);
+          setRole(null);
+          setInitRoute("Welcome");
+        }
+      };
+
+      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+      // fetchRole();
+
+      return () => subscriber(); // Unsubscribe on unmount
+    }, [])
+  );
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    console.log("state update: ", user);
-    return subscriber; // unsubscribe on unmount
-  }, []);
+    const determineInitRoute = async () => {
+      try {
+        console.log("determing the route");
+        const role = await AsyncStorage.getItem("role");
+        if (role) {
+          const parsed = JSON.parse(role);
+          if (parsed.role === "CUSTOMER") {
+            console.log("setting to customer");
+            setInitRoute("CustomerHomeNav");
+          } else if (parsed.role === "SHOPKEEPER") {
+            setInitRoute("BookShopHome");
+          } else {
+            setInitRoute("Welcome");
+          }
+        }
+      } catch (error) {
+        console.error("Error determining init route:", error);
+        setInitRoute("Welcome");
+      }
+    };
+    determineInitRoute();
+  }, [initRoute, role]);
 
   if (initializing) return null;
 
@@ -56,7 +114,13 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="CustomerHomeNav">
+    <Stack.Navigator initialRouteName={initRoute}>
+      <Stack.Screen
+        name="Welcome"
+        component={Welcome}
+        options={{ headerShown: false }}
+        initialParams={{ theme: theme }}
+      />
       <Stack.Screen
         name="BookShopNav"
         component={BookStoreNav}
@@ -96,12 +160,7 @@ const StackNavigator = ({ theme }) => {
       <Stack.Screen name="CustomerHome" options={{ headerShown: false }}>
         {(props) => <CustomerHome {...props} theme={theme} books={books} />}
       </Stack.Screen>
-      <Stack.Screen
-        name="Welcome"
-        component={Welcome}
-        options={{ headerShown: false }}
-        initialParams={{ theme: theme }}
-      />
+
       <Stack.Screen
         name="RegisterCustomer"
         component={RegisterCustomer}

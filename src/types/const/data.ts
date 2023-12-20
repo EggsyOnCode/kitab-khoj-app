@@ -11,8 +11,8 @@ export const book: Book = {
   seller: bookShop,
   price: 10.99,
   genre: ["Fiction", "Mystery"],
-  used: false  ,
-  pub: "Penguin Books"
+  used: false,
+  pub: "Penguin Books",
 };
 
 export const books: Book[] = [
@@ -45,3 +45,8 @@ export const books: Book[] = [
     pub: "Little, Brown and Company",
   },
 ];
+
+export enum Role {
+  customer = "CUSTOMER",
+  shopkeeper = "SHOPKEEPER",
+}
