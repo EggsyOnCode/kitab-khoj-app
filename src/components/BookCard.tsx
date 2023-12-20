@@ -1,4 +1,10 @@
-import { StyleSheet, View, Dimensions, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState } from "react";
 import { Avatar, Button, Card, Text, Chip } from "react-native-paper";
 import { Book, CustomerCatalog } from "../types/Book";
@@ -66,29 +72,33 @@ export default function BookCard(props: CardProps) {
   const [proc, setProc] = useState(false);
 
   const fetchCustomerID = async () => {
-    const shop = await AsyncStorage.getItem("customer");
-    if (shop) {
-      const parsedShop = JSON.parse(shop);
-      const customerId = parsedShop.customer_id;
-      customerId.toString();
-      setCustomer(customerId);
-      console.log("customer is :", customerId);
-      return customerId
-      // Handle parsedShop
-    } else {
-      alert("customer data couldn't be fetched");
+    try {
+      const shop = await AsyncStorage.getItem("customer");
+      if (shop) {
+        const parsedShop = JSON.parse(shop);
+        const customerId = parsedShop.customer_id.toString(); // Update the customerId
+        setCustomer(customerId);
+        console.log("customer is :", customerId);
+        return customerId;
+      } else {
+        alert("customer data couldn't be fetched");
+      }
+    } catch (error) {
+      console.error("Error fetching customer ID:", error);
     }
   };
 
   const fetchCusLoc = async () => {
     try {
-      await fetchCustomerID();
-      const res = await axios.get(
-        `http://10.7.82.109:3000/v1/customer/${customer}`
-      );
-      const loc = (res.data.data.result.delivery_address);
-      setDeliveryLoc(loc.toString());
-      console.log("delivery location has been set");
+      const customerId = await fetchCustomerID(); // Wait for the customer ID
+      if (customerId) {
+        const res = await axios.get(
+          `http://10.7.82.109:3000/v1/customer/${customerId}`
+        );
+        const loc = res.data.data.result.delivery_address;
+        setDeliveryLoc(loc);
+        console.log("delivery location has been set");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -96,10 +106,10 @@ export default function BookCard(props: CardProps) {
 
   const handleOrder = async (catalogId: number, price: string) => {
     try {
-      await fetchCusLoc();
+      setProc(true);
+      await fetchCusLoc(); // Await the delivery location before continuing
       console.log("placing order....");
-      console.log("customeer in handleorder is", customer);
-      
+      console.log("customer in handle order is", customer);
 
       const order = {
         bookshopcatalog_id: catalogId,
@@ -115,14 +125,16 @@ export default function BookCard(props: CardProps) {
         },
       });
 
-      if (res.data.data.result.length != 0) {
+      if (res.data.data.result.length !== 0) {
         alert("order created!");
-      }
-      else{
+      } else {
         console.log("order couldn't be created; error");
-        
       }
-    } catch (error) {}
+      setProc(false);
+    } catch (error) {
+      console.error("Error handling order:", error);
+      setProc(false);
+    }
   };
 
   return (
