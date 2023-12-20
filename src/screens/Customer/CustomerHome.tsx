@@ -5,6 +5,7 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import {
   Text,
@@ -32,7 +33,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
   const [searchQ, setSearchQ] = useState<string>("");
   const [books, setBooks] = useState<CustomerCatalog[]>([]);
   const [searchFilter, setSearchFilter] = React.useState("");
-
+  const [processing, setProcessing] = useState<boolean>(false);
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -129,7 +130,86 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
     setSearchQ(e);
   };
 
-  const handleSearch = async () => {};
+  const handleSearch = async () => {
+    try {
+      console.log("searching...");
+      console.log(searchQ);
+
+      setProcessing(true);
+
+      if (searchQ === "") {
+        const searchRes = await axios.get(
+          "http://10.7.82.109:3000/v1/bookshop/?searchQuery=",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Transform the response and update books
+        const transformedData: CustomerCatalog[] = searchRes.data.data.result
+          .map((item: any) => {
+            const books = item.Books.map((book: any) => ({
+              id: book.BookShopCatalog.id,
+              title: book.title,
+              author: book.author,
+              price:
+                item.BookShopFinance?.unit_price ||
+                book.BookShopCatalog.unit_price,
+              genre: book.genres || [],
+              used: book.BookShopCatalog.used || false,
+              publisher: book.publisher,
+              store: item.name,
+              store_location: item.location,
+            }));
+
+            return books;
+          })
+          .flat();
+
+        setBooks(transformedData);
+      } else {
+        const searchRes = await axios.get(
+          `http://10.7.82.109:3000/v1/bookshop/?searchQuery=${searchQ}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // console.log(searchRes);
+
+        const transformedData: CustomerCatalog[] = searchRes.data.data.result
+          .map((item: any) => {
+            const books = item.Books.map((book: any) => ({
+              id: book.BookShopCatalog.id,
+              title: book.title,
+              author: book.author,
+              price:
+                item.BookShopFinance?.unit_price ||
+                book.BookShopCatalog.unit_price,
+              genre: book.genres || [],
+              used: book.BookShopCatalog.used || false,
+              publisher: book.publisher,
+              store: item.name,
+              store_location: item.location,
+            }));
+
+            return books;
+          })
+          .flat();
+
+        console.log(transformedData);
+        setBooks(transformedData);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setProcessing(false); // Set processing state to false after search is done
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -150,8 +230,12 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
             value={searchQ}
             style={styles.search}
           />
-          <TouchableOpacity onPress={async () => handleSearch}>
-            <Avatar.Icon icon="arrow-up" />;
+          <TouchableOpacity onPress={handleSearch}>
+            {processing ? (
+              <ActivityIndicator size="small" color={theme.colors.primary} /> // Display loader when processing is true
+            ) : (
+              <Avatar.Icon icon="arrow-up" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={{ marginBottom: 20 }}>

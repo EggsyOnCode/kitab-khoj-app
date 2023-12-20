@@ -12,7 +12,7 @@ import * as FileSystem from "expo-file-system";
 import { Dimensions } from "react-native";
 import axios from "axios";
 import Config from "react-native-config";
-
+import mime from "mime"
 // const api_key = Config.OCR_API;
 const api_key = "AIzaSyDTpcRPc-44RydvSTDu6Oh8lrSuw2vSE_Q";
 
@@ -67,6 +67,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [title, setTitle] = useState("");
   const [author, setauthor] = useState("");
   const [iban, setiban] = useState("");
+  const [imgType, setImgType] = useState<any | undefined>("");
 
   const checkForDuplicate = async (title: string) => {
     const res = await axios.get(
@@ -140,6 +141,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       });
       if (!result.canceled) {
         setImage(result.assets[0].uri);
+        setImgType(result.assets[0].type);
         setImageBase64(result.assets[0].base64);
         // await apiCall(result.assets[0].base64);
       }
@@ -156,6 +158,33 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       return file;
     } catch (error) {
       console.error("Error making form data:", error);
+    }
+  };
+
+  const uploadImageToS3 = async (imageUri:any, type:any) => {
+    const config = {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const formData = new FormData();
+    // formData.append("attachment",{
+    //   uri: imageUri,
+    //   type: mime?.getType(imageUri)
+    // })
+    formData.append("type", type);
+
+    try {
+      const response = await axios.post(
+        "http://10.7.82.109:3000/v1/book/image",
+        formData,
+        config
+      );
+      return response.data.data.result;
+    } catch (error) {
+      console.log("Error in uploading image", error);
     }
   };
 
@@ -213,7 +242,9 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
                 image: sendImage(),
               });
             }}
-          >Update</Button>
+          >
+            Update
+          </Button>
           {/* {!proc ? (
             words && (
               <View style={{ padding: 20 }}>

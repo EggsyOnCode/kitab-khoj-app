@@ -140,7 +140,7 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
       let bizId;
 
       const shopkeeperData = {
-        email: `${shopkeeper}@gmail.com`,
+        email: getEmail(),
         name: shopkeeper,
         phone: phoneNumber,
       };
@@ -169,7 +169,7 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
 
       try {
         const bookshopRes = await axios.post(
-          "http:/10.7.82.109:3000/v1/Bookshop",
+          "http:/10.7.82.109:3000/v1/bookshop",
           bookshopData,
           {
             headers: {
@@ -179,8 +179,18 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
         );
         bizId = bookshopRes?.data?.data?.result?.id;
         console.log("Bookshop ID:", bizId);
-      } catch (bookshopError) {
-        console.error("Bookshop API Error:", bookshopError);
+      } catch (error:any) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          console.error("biz API Error:", error.response.data);
+          console.error("Status Code:", error.response.status);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error("No response received:", error.request);
+        } else {
+          // Something happened in setting up the request that triggered an error
+          console.error("Error setting up the request:", error.message);
+        }
       }
 
       const financeData = {
@@ -258,7 +268,7 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
             }}
           />
 
-          <TextInput
+          {/* <TextInput
             label={"Email"}
             value={email}
             onChangeText={handleEmailChange}
@@ -271,7 +281,7 @@ const RegisterBookStore: React.FC<props> = ({ theme, navigation }) => {
                 placeholder: theme.colors.black, // Add any other color properties if needed
               },
             }}
-          />
+          /> */}
 
           <TextInput
             label={"Biz Help Line"}
