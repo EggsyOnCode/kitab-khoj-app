@@ -82,7 +82,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
         }
       } else {
         console.log("is a shopkeeper");
-        navigation.navigate("BookShopHome");
+        navigation.navigate("BookShopNav");
       }
     } catch (shopErr) {
       console.error("Error checking shopkeeper access:", shopErr);

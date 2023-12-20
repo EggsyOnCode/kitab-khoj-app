@@ -114,7 +114,7 @@ const StackNavigator = ({ theme }) => {
   }
 
   return (
-    <Stack.Navigator initialRouteName="CustomerHomeNav">
+    <Stack.Navigator initialRouteName="BookShopNav">
       <Stack.Screen
         name="Welcome"
         component={Welcome}
