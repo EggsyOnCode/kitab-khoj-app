@@ -1,7 +1,10 @@
 import { StyleSheet, View, Dimensions, FlatList } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Button, Card, Text, Chip } from "react-native-paper";
 import { Book, CustomerCatalog } from "../types/Book";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { TouchableOpacity } from "react-native-gesture-handler";
 const screenWidth = Dimensions.get("window").width;
 
 interface CardProps {
@@ -52,13 +55,75 @@ export default function BookCard(props: CardProps) {
     [theme]
   );
 
-   const renderGenre = ({ item }:{item: any}) => (
-    <View style={{marginRight: 6}}>
-     <Chip icon="check">
-       {item}
-     </Chip>
+  const renderGenre = ({ item }: { item: any }) => (
+    <View style={{ marginRight: 6 }}>
+      <Chip icon="check">{item}</Chip>
     </View>
-   );
+  );
+
+  const [customer, setCustomer] = useState("");
+  const [deliveryLoc, setDeliveryLoc] = useState("");
+  const [proc, setProc] = useState(false);
+
+  const fetchCustomerID = async () => {
+    const shop = await AsyncStorage.getItem("customer");
+    if (shop) {
+      const parsedShop = JSON.parse(shop);
+      const customerId = parsedShop.customer_id;
+      customerId.toString();
+      setCustomer(customerId);
+      console.log("customer is :", customerId);
+      return customerId
+      // Handle parsedShop
+    } else {
+      alert("customer data couldn't be fetched");
+    }
+  };
+
+  const fetchCusLoc = async () => {
+    try {
+      await fetchCustomerID();
+      const res = await axios.get(
+        `http://10.7.82.109:3000/v1/customer/${customer}`
+      );
+      const loc = (res.data.data.result.delivery_address);
+      setDeliveryLoc(loc.toString());
+      console.log("delivery location has been set");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleOrder = async (catalogId: number, price: string) => {
+    try {
+      await fetchCusLoc();
+      console.log("placing order....");
+      console.log("customeer in handleorder is", customer);
+      
+
+      const order = {
+        bookshopcatalog_id: catalogId,
+        customer_id: customer,
+        delivery_location: deliveryLoc,
+        price: price,
+      };
+
+      console.log(order);
+      const res = await axios.post("http://10.7.82.109:3000/v1/order", order, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.data.data.result.length != 0) {
+        alert("order created!");
+      }
+      else{
+        console.log("order couldn't be created; error");
+        
+      }
+    } catch (error) {}
+  };
 
   return (
     <Card style={styles.card}>
@@ -92,7 +157,12 @@ export default function BookCard(props: CardProps) {
         <Chip icon="cash" textStyle={{ fontWeight: "bold", fontSize: 18 }}>
           {book.price}
         </Chip>
-        <Button style={styles.button}>Order</Button>
+        <Button
+          style={styles.button}
+          onPress={() => handleOrder(book.id, book.price.toString())}
+        >
+          Order
+        </Button>
       </Card.Actions>
     </Card>
   );
