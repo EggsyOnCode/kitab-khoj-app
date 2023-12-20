@@ -68,6 +68,7 @@ export default function BookCard(props: CardProps) {
   );
 
   const [customer, setCustomer] = useState("");
+  const [shop, setShop] = useState("");
   const [deliveryLoc, setDeliveryLoc] = useState("");
   const [proc, setProc] = useState(false);
 
@@ -98,37 +99,66 @@ export default function BookCard(props: CardProps) {
         const loc = res.data.data.result.delivery_address;
         setDeliveryLoc(loc);
         console.log("delivery location has been set");
+        return loc;
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const fetchShopID = async (catalogId: number) => {
+    try {
+      const res = await axios.get(
+        `http://10.7.82.109:3000/v1/BookShopCatalog/item/${catalogId}`
+      );
+      const shop = res.data.data.result[0].bookshop_id;
+      console.log(res.data.data.result[0]);
+      console.log("shop is", shop);
+      console.log("shop id has been set");
+      return shop; // Return shop ID
+    } catch (error) {
+      console.error("Error fetching shop ID:", error);
+      return null; // Return null in case of an error
+    }
+  };
+
   const handleOrder = async (catalogId: number, price: string) => {
     try {
       setProc(true);
-      await fetchCusLoc(); // Await the delivery location before continuing
-      console.log("placing order....");
-      console.log("customer in handle order is", customer);
+      const cusId = await fetchCustomerID();
+      const loc = await fetchCusLoc(); // Await the delivery location before continuing
+      const shopId = await fetchShopID(catalogId); // Wait for shop ID
+      if (shopId) {
+        setShop(shopId); // Set shop ID to state
+        console.log("placing order....");
+        console.log("customer in handle order is", customer);
 
-      const order = {
-        bookshopcatalog_id: catalogId,
-        customer_id: customer,
-        delivery_location: deliveryLoc,
-        price: price,
-      };
+        const order = {
+          bookshopcatalog_id: catalogId,
+          customer_id: cusId,
+          bookshop_id: shopId, // Use the retrieved shop ID
+          delivery_location: loc,
+          price: price,
+        };
 
-      console.log(order);
-      const res = await axios.post("http://10.7.82.109:3000/v1/order", order, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        console.log(order);
+        const res = await axios.post(
+          "http://10.7.82.109:3000/v1/order",
+          order,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      if (res.data.data.result.length !== 0) {
-        alert("order created!");
+        if (res.data.data.result.length !== 0) {
+          alert("order created!");
+        } else {
+          console.log("order couldn't be created; error");
+        }
       } else {
-        console.log("order couldn't be created; error");
+        console.log("Failed to retrieve shop ID");
       }
       setProc(false);
     } catch (error) {
