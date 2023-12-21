@@ -11,7 +11,7 @@ import auth, { firebase } from "@react-native-firebase/auth";
 import GoogleSignIn from "../../auth/GoogleSignIn";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
-import { authStore } from "../../utils/authStore";
+import { authStore, storeCustomer, storeShop } from "../../utils/authStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Role } from "../../types/const/data";
 
@@ -57,6 +57,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
         `http://10.7.82.109:3000/v1/shopkeeper/access?email=${email}`
       );
 
+      
       if (!shopRes.data.data.result) {
         console.log("not a shopkeeper");
         try {
@@ -75,6 +76,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
             console.log("not a customer");
           } else {
             console.log("is a customer");
+            await storeCustomer(cusRes.data.data.result.id);
             navigation.navigate("CustomerHomeNav");
           }
         } catch (cusErr) {
@@ -82,6 +84,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
         }
       } else {
         console.log("is a shopkeeper");
+        await storeShop(shopRes.data.data.result.BookShop.id, shopRes.data.data.result.id);
         navigation.navigate("BookShopNav");
       }
     } catch (shopErr) {

@@ -17,22 +17,23 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookCard from "../../components/BookCard";
-import { Book, CustomerCatalog, OrderedBook } from "../../types/Book";
+import { Book, CustomerCatalog, OrderedBook, ShopOrders } from "../../types/Book";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { book } from "../../types/const/data";
 import OrderCard from "../../components/OrderCard";
+import ShopOrderCard from "../../components/ShopOrderCard";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
-interface ShopOrdersProps {
+interface BookShopOrderProps {
   theme: any;
   navigation: any;
 }
 
-const ShopOrders: React.FC<ShopOrdersProps> = ({
+const BookShopOrder: React.FC<BookShopOrderProps> = ({
   theme,
   navigation,
 }) => {
@@ -77,21 +78,20 @@ const ShopOrders: React.FC<ShopOrdersProps> = ({
     },
   });
 
-  const [orderedBooks, setOrderedBooks] = useState<OrderedBook[] | null>();
+  const [orderedBooks, setOrderedBooks] = useState<ShopOrders[] | null>();
 
-  const fetchCustomerID = async () => {
-    try {
-      const shop = await AsyncStorage.getItem("customer");
-      if (shop) {
-        const parsedShop = JSON.parse(shop);
-        const customerId = parsedShop.customer_id.toString(); // Update the customerId
-        console.log("customer is :", customerId);
-        return customerId;
-      } else {
-        alert("customer data couldn't be fetched");
-      }
-    } catch (error) {
-      console.error("Error fetching customer ID:", error);
+  const fetchShopID = async () => {
+    const shop = await AsyncStorage.getItem("shopData");
+    if (shop) {
+      const parsedShop = JSON.parse(shop);
+      const bookshopId = parsedShop.bookshop_id;
+      console.log(bookshopId);
+      // bookshopId.toString();
+      console.log("shop is :", bookshopId);
+      return bookshopId
+      // Handle parsedShop
+    } else {
+      alert("shop data couldn't be fetched");
     }
   };
 
@@ -109,11 +109,11 @@ const ShopOrders: React.FC<ShopOrdersProps> = ({
     React.useCallback(() => {
       const fetchData = async () => {
         try {
-          const cusID = await fetchCustomerID();
-          console.log("cus is: ", cusID);
+          const shopId = await fetchShopID();
+          console.log("shop is: ", shopId);
 
           const orderRes = await axios.get(
-            `http://10.7.82.109:3000/v1/order/customer/${cusID}`,
+            `http://10.7.82.109:3000/v1/order/shop/${shopId}`,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -121,8 +121,11 @@ const ShopOrders: React.FC<ShopOrdersProps> = ({
             }
           );
 
-          const orderedBooksPromises = orderRes.data.data.result.map(
-            async (item: any) => {
+          console.log(orderRes.data);
+          
+
+          const orderedBooksPromises: Promise<ShopOrders>[] =
+            orderRes.data.data.result.map(async (item: any) => {
               const bookData = await fetchBookData(item.bookshopcatalog_id);
               return {
                 id: item.id,
@@ -130,11 +133,10 @@ const ShopOrders: React.FC<ShopOrdersProps> = ({
                 author: bookData.author,
                 price: item.price,
                 publisher: bookData.publisher,
-                store: item.BookShop.name,
-                store_location: item.BookShop.location,
+                customer: item.Customer.name,
+                delivery_location: item.Customer.delivery_address,
               };
-            }
-          );
+            });
 
           const orderedBooks = await Promise.all(orderedBooksPromises);
           console.log(orderedBooks);
@@ -149,9 +151,9 @@ const ShopOrders: React.FC<ShopOrdersProps> = ({
     }, [])
   );
 
-  const renderBook = ({ item }: { item: OrderedBook }) => (
+  const renderBook = ({ item }: { item: ShopOrders }) => (
     <View style={{ marginBottom: 30 }}>
-      <OrderCard theme={theme} book={item} />
+      <ShopOrderCard theme={theme} book={item} />
     </View>
   );
 
@@ -175,4 +177,4 @@ const ShopOrders: React.FC<ShopOrdersProps> = ({
   );
 };
 
-export default withTheme(ShopOrders);
+export default withTheme(BookShopOrder);

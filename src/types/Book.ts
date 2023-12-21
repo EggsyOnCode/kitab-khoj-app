@@ -41,6 +41,17 @@ export type OrderedBook = {
   store_location : string
 }
 
+export type ShopOrders = {
+  //rep order num
+  id: number;
+  title: string;
+  author: string;
+  price: string;
+  publisher: string;
+  customer: string,
+  delivery_location: string
+};
+
 export type BookShop = {
   name: string;
   location: string;

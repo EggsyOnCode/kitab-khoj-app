@@ -10,6 +10,26 @@ export const authStore = async (storeId: string, storeObj: any) => {
   }
 };
 
+export const storeShop = async (bizId:any, shopkeeper_id: any)=>{
+    const shop = {
+      bookshop_id: bizId,
+      shopkeeper_id: shopkeeper_id,
+    };
+
+    const storeObj = JSON.stringify(shop);
+    await AsyncStorage.setItem("shopData", storeObj);
+}
+
+
+export const storeCustomer = async (cusId: any) => {
+  const customer = {
+    customer_id: cusId,
+  };
+
+  const storeObj = JSON.stringify(customer);
+  await AsyncStorage.setItem("customer", storeObj);
+};
+
 export const authReturnRole = async () => {
   const res = await AsyncStorage.getItem("role");
   if (res) {
