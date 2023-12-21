@@ -12,9 +12,16 @@ import * as FileSystem from "expo-file-system";
 import { Dimensions } from "react-native";
 import axios from "axios";
 import Config from "react-native-config";
-import mime from "mime"
+import mime from "mime";
 // const api_key = Config.OCR_API;
 const api_key = "AIzaSyDTpcRPc-44RydvSTDu6Oh8lrSuw2vSE_Q";
+
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Credentials } from "@aws-sdk/types";
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
+
+import { RNS3 } from "react-native-aws3";
 
 interface ScannerScreenProps {
   theme: any;
@@ -30,7 +37,7 @@ const ensureDirExists = async () => {
   }
 };
 
-const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
+const Scanner: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
@@ -64,10 +71,12 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
   const [words, setWords] = useState<string | null>(null);
   const [proc, setProc] = useState<boolean>(false);
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("as you like it");
   const [author, setauthor] = useState("");
-  const [iban, setiban] = useState("");
+  const [iban, setiban] = useState("9780557015894");
   const [imgType, setImgType] = useState<any | undefined>("");
+  const [photo, setPhoto] = useState<any>();
+  const [imageLink, setImageLink] = useState<any>();
 
   const checkForDuplicate = async (title: string) => {
     const res = await axios.get(
@@ -124,7 +133,10 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
       ],
     };
 
-    const res = await axios.post(apiUrl, reqData);
+    const res:any = await axios.post(apiUrl, reqData);
+    setTitle(res?.book)
+    setiban(res?.isbn);
+    setauthor(res?.author);
 
     setWords(res.data.responses[0].fullTextAnnotation.text);
     setProc(false);
@@ -132,6 +144,8 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
 
   const launchCamera = async () => {
     try {
+      console.log("scanner ...");
+
       await ImagePicker.requestCameraPermissionsAsync();
       let result = await ImagePicker.launchCameraAsync({
         cameraType: ImagePicker.CameraType.back,
@@ -140,52 +154,77 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
         quality: 1,
       });
       if (!result.canceled) {
+        const uri = result.assets[0].uri;
+        let filename: any = uri.split("/").pop();
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
+
+        // const formData: any = new FormData();
+        // formData.append("file", {
+        //   uri: uri,
+        //   name: uri?.split("/")?.pop(),
+        //   type: "image/jpeg",
+        // });
+        // // formData.append("type", type);
+
+        // setPhoto(formData);
+
         setImage(result.assets[0].uri);
         setImgType(result.assets[0].type);
         setImageBase64(result.assets[0].base64);
-        // await apiCall(result.assets[0].base64);
+        await apiCall(result.assets[0].base64);
+        console.log("uploading to cloud....");
+
+        await AWSHelper.uploadFile(uri);
       }
     } catch (error) {}
   };
 
-  const sendImage = async () => {
-    // const form = new FormData();
-    // form.append('image', imageBase64);
-    try {
-      const response = await fetch(image);
-      const blob = await response.blob();
-      const file = new File([blob], "image.jpg", { type: "image/jpeg" }); // Replace 'image.jpg' with your desired filename
-      return file;
-    } catch (error) {
-      console.error("Error making form data:", error);
-    }
+  const options = {
+    keyPrefix: "uploads/",
+    bucket: "flexiwork-bucket",
+    region: "us-east-1",
+    successActionStatus: 201,
   };
 
-  const uploadImageToS3 = async (imageUri:any, type:any) => {
-    const config = {
-      headers: {
-        accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    };
+  let credentials: Credentials = {
+    accessKeyId: "AKIARPRISAUITNDP2XVI",
+    secretAccessKey: "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",
+  };
+  const client = new S3Client({
+    region: options.region,
+    credentials: credentials,
+  });
+  const AWSHelper = {
+    uploadFile: async function (imageURI: any) {
+      try {
+        const file: any = {
+          uri: imageURI,
+          name: `${imageURI}.jpeg`,
+          type: "image/jpeg",
+        };
 
-    const formData = new FormData();
-    // formData.append("attachment",{
-    //   uri: imageUri,
-    //   type: mime?.getType(imageUri)
-    // })
-    formData.append("type", type);
-
-    try {
-      const response = await axios.post(
-        "http://10.7.82.109:3000/v1/book/image",
-        formData,
-        config
-      );
-      return response.data.data.result;
-    } catch (error) {
-      console.log("Error in uploading image", error);
-    }
+        await client
+          .send(
+            new PutObjectCommand({
+              Bucket: "flexiwork-bucket",
+              Key: "uploads/" + file.name,
+              Body: file,
+            })
+          )
+          .then((response) => {
+            const link = `https://flexiwork-bucket.s3.amazonaws.com/uploads/${imageURI}`;
+            setImageLink(link);
+            console.log(response.$metadata);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   };
 
   return (
@@ -229,9 +268,10 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
               }}
             />
           )}
-          <Button
+          {/* <Button
             style={styles.button}
             onPress={() => {
+              console.log(imageLink);
               navigation.navigate("BookAttributes", {
                 screen: "BookAttributes",
                 theme: theme,
@@ -239,19 +279,20 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
                 pTitle: "Diplomacy",
                 pAuthor: "Henry issinger",
                 pIban: "9824",
-                image: sendImage(),
+                link: imageLink,
               });
             }}
           >
             Update
-          </Button>
-          {/* {!proc ? (
+          </Button> */}
+          {!proc ? (
             words && (
               <View style={{ padding: 20 }}>
                 <Text style={{ color: "red", marginBottom: 6 }}>{words}</Text>
                 <Button
                   style={styles.button}
                   onPress={() => {
+                    console.log(imageLink);
                     navigation.navigate("BookAttributes", {
                       screen: "BookAttributes",
                       theme: theme,
@@ -259,7 +300,7 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
                       pTitle: title,
                       pAuthor: author,
                       pIban: iban,
-                      image: sendImage(),
+                      link: imageLink,
                     });
                   }}
                 >
@@ -279,11 +320,11 @@ const ScannerScreen: React.FC<ScannerScreenProps> = ({ theme, navigation }) => {
             >
               <ActivityIndicator size="large" color="blue" />
             </View>
-          )} */}
+          )}
         </View>
       </ScrollView>
     </View>
   );
 };
 
-export default withTheme(ScannerScreen);
+export default withTheme(Scanner);

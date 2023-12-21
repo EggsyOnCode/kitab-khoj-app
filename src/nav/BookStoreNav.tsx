@@ -13,7 +13,6 @@ const BookStoreNav: React.FC<props> = ({ theme, navigation }) => {
   const [index, setIndex] = React.useState(0);
 
   const OrdersRoute = () => <BookShopOrders theme={theme} navigation={navigation}/>;
-  const SettingsRoute = () => <BookShopSettings />;
   const HomeRoute = ()=><BookShopHome navigation={navigation} theme={theme}/>
 
 
@@ -25,13 +24,11 @@ const BookStoreNav: React.FC<props> = ({ theme, navigation }) => {
       unfocusedIcon: "home",
     },
     { key: "orders", title: "Orders", focusedIcon: "cart" },
-    { key: "settings", title: "Account", focusedIcon: "account" },
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     home: HomeRoute,
     orders: OrdersRoute,
-    settings: SettingsRoute,
   });
 
   return (

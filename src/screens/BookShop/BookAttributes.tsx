@@ -31,7 +31,7 @@ interface props {
 }
 
 const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
-  const { pTitle, pAuthor, pIban, image } = route.params;
+  const { pTitle, pAuthor, pIban, link } = route.params;
 
   const styles = React.useMemo(
     () =>
@@ -131,6 +131,7 @@ const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
     console.log("iban: ", iban);
     console.log("categories: ", categoryChips);
     console.log("categories: ", publisher);
+    console.log("photo is:", link);
 
     let bookId;
     let bookshopId: string;
@@ -157,11 +158,8 @@ const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
         genres: categoryChips,
       };
 
-      const bookRes = await axios.post("http:/10.7.82.109:3000/v1/book", book, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const bookRes = await axios.post("http:/10.7.82.109:3000/v1/book", book);
+      console.log(bookRes.data);
 
       bookId = bookRes?.data?.data?.result?.id;
       console.log("bookID: ", bookId);
@@ -184,25 +182,23 @@ const BookAttributes: React.FC<props> = ({ theme, navigation, route }) => {
         }
       );
       console.log("catalogue maybe");
+      console.log(catalogRes.data);
       const catalogId = catalogRes?.data?.data?.result?.id;
 
-      const form = new FormData();
-      form.append("image", image);
-      form.append("catalogId", catalogId);
-
+      const media = {
+        img_url: link,
+        bookshopcatalog_id: catalogId,
+      };
       try {
         const uploadResponse = await axios.post(
           "http://10.7.82.109:3000/v1/BookShopCatalog/book-media",
-          form,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          media
         );
         console.log(uploadResponse.data);
         console.log(catalogRes?.data?.data?.result?.id);
-      } catch (error) {alert("file upload error")}
+      } catch (error) {
+        alert("file upload error");
+      }
     };
 
     await createBook();

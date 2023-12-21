@@ -35,7 +35,9 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
   const [books, setBooks] = useState<CustomerCatalog[]>([]);
   const [searchFilter, setSearchFilter] = React.useState("");
   const [processing, setProcessing] = useState<boolean>(false);
-  const [filteredBooks, setFilteredBooks] = useState<CustomerCatalog[] | null>(null);
+  const [filteredBooks, setFilteredBooks] = useState<CustomerCatalog[] | null>(
+    null
+  );
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -214,6 +216,8 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ theme }) => {
   };
 
   const multiParamSearch = (searchText: string) => {
+    console.log(searchText);
+
     const filtered = books.filter((book) => {
       // Apply search criteria for author, title, publisher, and genre
       console.log(book);

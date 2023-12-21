@@ -34,27 +34,6 @@ const GoogleSignIn: React.FC<props> = ({ theme, navigation }) => {
 
       if (!shopRes.data.data.result) {
         console.log("not a shopkeeper");
-        try {
-          console.log("cus checking emaiil is ", email);
-          
-          const cusRes = await axios.get(
-            `http://10.7.82.109:3000/v1/Customer/access?email=${email}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (!cusRes.data.data.result) {
-            console.log("not a customer");
-          } else {
-            console.log("is a customer");
-            navigation.navigate("CustomerHomeNav");
-          }
-        } catch (cusErr) {
-          console.error("Error checking customer access:", cusErr);
-        }
       } else {
         console.log("is a shopkeeper");
         navigation.navigate("BookShopHome");
@@ -62,6 +41,29 @@ const GoogleSignIn: React.FC<props> = ({ theme, navigation }) => {
     } catch (shopErr) {
       console.error("Error checking shopkeeper access:", shopErr);
       alert("Error checking shopkeeper access");
+    }
+
+    try {
+      console.log("cus checking emaiil is ", email);
+
+      const cusRes = await axios.get(
+        `http://10.7.82.109:3000/v1/Customer/access?email=${email}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (cusRes.data.data.result) {
+        console.log("is a customer");
+        console.log("customer: ", cusRes.data.data.result);
+        navigation.navigate("CustomerHomeNav");
+      } else {
+        console.log("not a customer");
+      }
+    } catch (cusErr) {
+      console.error("Error checking customer access:", cusErr);
     }
   };
   async function onGoogleButtonPress() {

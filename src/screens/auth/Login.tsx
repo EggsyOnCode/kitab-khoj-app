@@ -25,12 +25,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
   const [password, setPassword] = useState("");
   
 
-  const handleSignIn = () => {
+  const handleRegister = () => {
     console.log(email, password);
     auth()
       .createUserWithEmailAndPassword(email.trim(), password)
       .then(async () => {
         console.log("User account created & signed in!");
+        navigation.navigate("Welcome");
       })
       .catch((error) => {
         if (error.code === "auth/email-already-in-use") {
@@ -47,11 +48,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
 
 
   const checkRoleDB = async (email: any) => {
-    // const payload = {
-    //   email: email,
-    // };
-
-    // console.log("user's email is ", payload.email);
     try {
       const shopRes = await axios.get(
         `http://10.7.82.109:3000/v1/shopkeeper/access?email=${email}`
@@ -61,7 +57,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
       if (!shopRes.data.data.result) {
         console.log("not a shopkeeper");
         try {
-          console.log("cus checking emaiil is ", email);
+          console.log("customer checking emaiil is ", email);
 
           const cusRes = await axios.get(
             `http://10.7.82.109:3000/v1/Customer/access?email=${email}`,
@@ -77,7 +73,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
           } else {
             console.log("is a customer");
             await storeCustomer(cusRes.data.data.result.id);
-            navigation.navigate("CustomerHomeNav");
+            await navigation.navigate("CustomerHomeNav");
           }
         } catch (cusErr) {
           console.error("Error checking customer access:", cusErr);
@@ -192,7 +188,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ theme, navigation }) => {
 
       <Button
         mode="contained"
-        onPress={handleSignIn}
+        onPress={handleRegister}
         style={styles.register}
         textColor="black"
       >
